@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Penguin.Persistence.Repositories.EntityFramework.NetFramework</id>
+    <version>1.1.9</version>
+    <authors>MrJackSpade</authors>
+    <owners>MrJackSpade</owners>
+    <projectUrl>http://www.penguinms.com/Nuget</projectUrl>
+    <iconUrl>http://www.penguinms.com/client/images/pg.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A wrapper that allows penguin repositories to be used with Penguin.Persistence.EntityFramework contexts</description>
+    <releaseNotes>Not Available</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>Penguin EntityFramework</tags>
+    <dependencies>
+      <dependency id="EntityFramework" version="6.2.0" />
+	  <dependency id="Microsoft.SqlServer.Compact" version="4.0.8876" />
+	  <dependency id="Penguin.Entities" version="1.0.4" />
+	  <dependency id="Penguin.Persistence.Abstractions" version="1.2.1" />
+	  <dependency id="Penguin.Reflection" version="3.0.7" />
+	  <dependency id="Penguin.Reflection.Abstractions" version="2.0.4" />
+	  <dependency id="Penguin.Reflection.Extensions" version="2.0.4" />
+	  <dependency id="Penguin.Messaging.Abstractions" version="2.0.4" />
+	  <dependency id="Penguin.Messaging.Core" version="2.0.7" />
+	  <dependency id="Penguin.Messaging.Logging" version="2.0.4" />
+	  <dependency id="Penguin.Persistence.EntityFramework.NetFramework.csproj" version="1.1.5" />
+	  <dependency id="System.ServiceModel.Primitives" version="4.5.3" />
+    </dependencies>
+  </metadata>
+</package>
