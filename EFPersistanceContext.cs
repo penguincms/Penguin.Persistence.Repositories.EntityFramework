@@ -17,6 +17,7 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Penguin.Debugging;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
 {
@@ -61,7 +62,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         public EFPersistenceContext(DbContext dbContext, MessageBus messageBus = null) : base(typeof(T), IsValidType(dbContext, typeof(T)) ? (GenerateBaseQuery(dbContext.Set<T>())) : (new List<T>() as IQueryable<T>))
         {
             MessageBus = messageBus;
-            MessageBus?.Log(Id.ToString() + $": Creating context for type {typeof(T).FullName}");
+
+            Penguin.Debugging.StaticLogger.Log(Id.ToString() + $": Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
+
             this.DbContext = dbContext;
 
             if (!IsValidType(dbContext, typeof(T)))
@@ -124,7 +127,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 OpenWriteContexts.TryAdd(DbContext, new SynchronizedCollection<IWriteContext>());
             }
 
-            MessageBus?.Log(Id.ToString() + $": Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}");
+            StaticLogger.Log(Id.ToString() + $": Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
 
             if (OpenWriteContexts[this.DbContext].Count == 0)
             {
@@ -144,7 +147,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public override void CancelWrite()
         {
-            MessageBus?.Log(Id.ToString() + $": Cancelling write. Current depth {OpenWriteContexts[this.DbContext].Count}");
+            StaticLogger.Log(Id.ToString() + $": Cancelling write. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+
             this.DetachAll();
 
             this.WriteEnabled = false;
@@ -163,12 +167,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 if (this.WriteEnabled)
                 {
-                    MessageBus?.Log(Id.ToString() + $": Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}");
+                    StaticLogger.Log(Id.ToString() + $": Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                     this.DbContext.SaveChanges();
                 }
                 else
                 {
-                    MessageBus?.Log(Id.ToString() + $": Write not enabled. Can not save changes");
+                    StaticLogger.Log(Id.ToString() + $": Write not enabled. Can not save changes", StaticLogger.LoggingLevel.Final);
                     throw new UnauthorizedAccessException("This context has not been enabled for writing");
                 }
             }
@@ -180,12 +184,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="writeContext">Any valid open write context</param>
         public override async Task CommitASync(IWriteContext writeContext)
         {
-            //We only actuall want to call commit if this is the ONLY open context (Top Level in nested call)
+            //We only actually want to call commit if this is the ONLY open context (Top Level in nested call)
             if (this.GetWriteContexts().Length == 1 && this.GetWriteContexts().Single() == writeContext)
             {
                 if (this.WriteEnabled)
                 {
-                    MessageBus?.Log(Id.ToString() + $": Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}");
+                    StaticLogger.Log(Id.ToString() + $": Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                     await this.DbContext.SaveChangesAsync();
                 }
                 else
@@ -246,7 +250,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public void DetachAll()
         {
-            MessageBus?.Log(Id.ToString() + $": Attempting detatch all");
+            StaticLogger.Log(Id.ToString() + $": Attempting detatch all", StaticLogger.LoggingLevel.Call);
 
             if (!this.IsDisposed())
             {
@@ -256,7 +260,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 {
                     if (databaseEntityEntry.Entity != null)
                     {
-                        MessageBus?.Log(Id.ToString() + $": Detatching entity of type {databaseEntityEntry.Entity.GetType().ToString()}");
+                        StaticLogger.Log(Id.ToString() + $": Detatching entity of type {databaseEntityEntry.Entity.GetType().ToString()}", StaticLogger.LoggingLevel.Call);
                         databaseEntityEntry.State = EntityState.Detached;
                     }
                 }
@@ -271,7 +275,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             OpenWriteContexts[this.DbContext].Remove(context);
 
-            MessageBus?.Log(Id.ToString() + $": Ending write at depth of {OpenWriteContexts[this.DbContext].Count}");
+            StaticLogger.Log(Id.ToString() + $": Ending write at depth of {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
 
             if (OpenWriteContexts[this.DbContext].Count == 0)
             {

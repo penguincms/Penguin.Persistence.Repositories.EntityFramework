@@ -40,6 +40,9 @@
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.SqlServerCompact.6.2.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
+    <Reference Include="Penguin.Debugging, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Penguin.Debugging.1.0.2\lib\netstandard2.0\Penguin.Debugging.dll</HintPath>
+    </Reference>
     <Reference Include="Penguin.Entities, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Entities.1.0.8\lib\netstandard2.0\Penguin.Entities.dll</HintPath>
     </Reference>
