@@ -9,21 +9,29 @@
     <PackageIconUrl>http://www.penguinms.com/client/images/pg.png</PackageIconUrl>
     <IncludeSymbols>true</IncludeSymbols>
 	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="dist\**" />
     <Compile Remove="lib\**" />
+    <Compile Remove="packages\**" />
+    <EmbeddedResource Remove="dist\**" />
     <EmbeddedResource Remove="lib\**" />
+    <EmbeddedResource Remove="packages\**" />
+    <None Remove="dist\**" />
     <None Remove="lib\**" />
+    <None Remove="packages\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove=".gitignore" />
     <None Remove="LocalPublish.bat" />
     <None Remove="NugetPublish.bat" />
     <None Remove="Pack.bat" />
     <None Remove="packages.config" />
+    <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetCore.xml" />
     <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.1.1.0.nupkg" />
     <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.1.1.1.nupkg" />
     <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.1.1.2.nupkg" />
@@ -31,29 +39,30 @@
   </ItemGroup>
 
  <ItemGroup>
-    <None Include="..\License.txt">
+    <None Include="License.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 
  <ItemGroup>
-   <PackageReference Include="Penguin.Entities" Version="1.0.8" />
+   <PackageReference Include="Penguin.Debugging" Version="1.0.2" />
+   <PackageReference Include="Penguin.Entities" Version="1.0.9" />
    <PackageReference Include="Penguin.Messaging.Logging" Version="2.0.6" />
    <PackageReference Include="Penguin.Persistence.Abstractions" Version="1.2.8" />
-   <PackageReference Include="Penguin.Persistence.EntityFramework.NetStandard" Version="1.1.2" />
-   <PackageReference Include="Penguin.Reflection" Version="3.11.0" />
-   <PackageReference Include="Penguin.Reflection.Extensions" Version="2.0.6" />
+   <PackageReference Include="Penguin.Persistence.EntityFramework.NetStandard" Version="1.1.6" />
+   <PackageReference Include="Penguin.Reflection" Version="3.13.3" />
+   <PackageReference Include="Penguin.Reflection.Extensions" Version="2.0.7" />
    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.3" />
    <PackageReference Include="Z.EntityFramework.Classic.Community" Version="7.1.0" />
    <PackageReference Include="Z.EntityFramework.Classic.SqlServerCompact" Version="7.0.13" />
  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningsAsErrors>NU1605, CS1591</WarningsAsErrors>
-    <DocumentationFile>C:\SVN\Framework\Nuget\Penguin.Persistence.Repositories.EntityFramework\Penguin.Persistence.Repositories.EntityFramework.NetCore.xml</DocumentationFile>
+    <DocumentationFile>Penguin.Persistence.Repositories.EntityFramework.NetCore.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>full</DebugType>
-    <DocumentationFile>C:\SVN\Framework\Nuget\Penguin.Persistence.Repositories.EntityFramework\Penguin.Persistence.Repositories.EntityFramework.NetCore.xml</DocumentationFile>
+    <DocumentationFile>Penguin.Persistence.Repositories.EntityFramework.NetCore.xml</DocumentationFile>
   </PropertyGroup>
 </Project>
