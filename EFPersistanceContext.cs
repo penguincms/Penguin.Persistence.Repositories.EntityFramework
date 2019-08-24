@@ -427,7 +427,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             }
         }
 
-        private string Id { get; set; } = $"{Guid.NewGuid()}<{typeof(T).FullName}>";
+        private string Id { get; set; } = $"{Guid.NewGuid()} <{typeof(T).FullName}>";
 
         private WriteContextBag OpenWriteContexts { get; set; } = new WriteContextBag();
 
