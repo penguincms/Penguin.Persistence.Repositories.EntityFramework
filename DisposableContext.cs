@@ -9,8 +9,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// </summary>
     public class DisposableContext<T> : EFPersistenceContext<T> where T : KeyedObject
     {
-        #region Constructors
-
         /// <summary>
         /// Creates a new instance of this context
         /// </summary>
@@ -18,7 +16,5 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         public DisposableContext(string connectionString) : base(new DynamicContext(new PersistenceConnectionInfo(connectionString)))
         {
         }
-
-        #endregion Constructors
     }
 }

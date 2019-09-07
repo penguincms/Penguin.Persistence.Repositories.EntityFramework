@@ -40,9 +40,6 @@
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.SqlServerCompact.6.2.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="Penguin.Debugging, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Debugging.1.0.2\lib\netstandard2.0\Penguin.Debugging.dll</HintPath>
-    </Reference>
     <Reference Include="Penguin.Entities, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Entities.1.0.9\lib\netstandard2.0\Penguin.Entities.dll</HintPath>
     </Reference>
@@ -58,20 +55,11 @@
     <Reference Include="Penguin.Messaging.Logging, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Messaging.Logging.2.0.6\lib\netstandard2.0\Penguin.Messaging.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Penguin.Persistence.Abstractions, Version=1.2.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Persistence.Abstractions.1.2.8\lib\netstandard2.0\Penguin.Persistence.Abstractions.dll</HintPath>
-    </Reference>
     <Reference Include="Penguin.Persistence.EntityFramework, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Persistence.EntityFramework.NetFramework.csproj.1.1.9\lib\net471\Penguin.Persistence.EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="Penguin.Reflection, Version=3.13.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Reflection.3.13.3\lib\netstandard2.0\Penguin.Reflection.dll</HintPath>
-    </Reference>
     <Reference Include="Penguin.Reflection.Abstractions, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Reflection.Abstractions.2.0.6\lib\netstandard2.0\Penguin.Reflection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Penguin.Reflection.Extensions, Version=2.0.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Reflection.Extensions.2.0.7\lib\netstandard2.0\Penguin.Reflection.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />

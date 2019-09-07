@@ -137,6 +137,13 @@
             </summary>
             <returns>A new WriteContext capable of opening this PersistenceContext</returns>
         </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.OfType``1">
+            <summary>
+            Returns a subset including only the derived type from the underlying persistence context
+            </summary>
+            <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
+            <returns>A subset including only the derived type from the underlying persistence context</returns>
+        </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.MessageBus">
             <summary>
             The optionally provided message bus for sending persistence messages over
@@ -166,13 +173,6 @@
             If the object is an AuditableEntity, this updates the timestamps during saves
             </summary>
             <param name="o">The objects to update</param>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.OfType``1">
-            <summary>
-            Returns a subset including only the derived type from the underlying persistence context
-            </summary>
-            <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
-            <returns>A subset including only the derived type from the underlying persistence context</returns>
         </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.WriteContextBag">
             <summary>

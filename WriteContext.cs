@@ -8,8 +8,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// </summary>
     public class WriteContext : IWriteContext
     {
-        #region Properties
-
         /// <summary>
         /// A bool representing whether or not this WriteContext should attempt to commit changes asynchronously
         /// </summary>
@@ -19,10 +17,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// The PersistenceContext that spawned this write context
         /// </summary>
         public IPersistenceContext Context { get; protected set; }
-
-        #endregion Properties
-
-        #region Constructors
 
         /// <summary>
         /// Creates a new instance of this write context using the provided persistencecontext as a source
@@ -34,10 +28,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             this.EnableWrite();
         }
-
-        #endregion Constructors
-
-        #region Methods
 
         /// <summary>
         /// Cancels any open writes and detaches all entities
@@ -66,13 +56,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             this.DisableWrite();
         }
 
-        #endregion Methods
-
-        #region Fields
-
         private bool disposed = false;
-
-        #endregion Fields
 
         private Task<int> LastAsync { get; set; }
 

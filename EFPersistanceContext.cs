@@ -1,6 +1,6 @@
-﻿using Penguin.Entities;
+﻿using Penguin.Debugging;
+using Penguin.Entities;
 using Penguin.Messaging.Core;
-using Penguin.Messaging.Logging.Extensions;
 using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Attributes.Control;
 using Penguin.Persistence.Abstractions.Interfaces;
@@ -17,7 +17,6 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Penguin.Debugging;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
 {
@@ -27,8 +26,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// <typeparam name="T">The type of the object contained in this context</typeparam>
     public class EFPersistenceContext<T> : PersistenceContext<T> where T : KeyedObject
     {
-        #region Properties
-
         /// <summary>
         /// The backing Entity Framework DbContext for this context
         /// </summary>
@@ -50,10 +47,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public virtual bool WriteEnabled { get; set; }
 
-        #endregion Properties
-
-        #region Constructors
-
         /// <summary>
         /// Creates a new instance of this persistence context
         /// </summary>
@@ -72,10 +65,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 throw new ArgumentException($"Can not create {nameof(EFPersistenceContext<T>)}. {typeof(T).FullName} was not found on the {nameof(DbContext)}");
             }
         }
-
-        #endregion Constructors
-
-        #region Methods
 
         /// <summary>
         /// Adds a range of objects to the underlying context
@@ -136,10 +125,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             this.WriteEnabled = true;
 
-            if(!OpenWriteContexts[this.DbContext].Contains(context))
+            if (!OpenWriteContexts[this.DbContext].Contains(context))
             {
                 OpenWriteContexts[this.DbContext].Add(context);
-            }            
+            }
         }
 
         /// <summary>
@@ -341,7 +330,15 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return new WriteContext(this);
         }
 
-        #endregion Methods
+        /// <summary>
+        /// Returns a subset including only the derived type from the underlying persistence context
+        /// </summary>
+        /// <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
+        /// <returns>A subset including only the derived type from the underlying persistence context</returns>
+        public override IQueryable<TDerived> OfType<TDerived>()
+        {
+            return GenerateBaseQuery(this.DbContext.Set<TDerived>());
+        }
 
         /// <summary>
         /// The optionally provided message bus for sending persistence messages over
@@ -363,7 +360,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             return IncludeStrings(typeStack, NameSpace, Recursive);
         }
-
 
         /// <summary>
         /// Generates a list of strings to Include while accessing the database, using the EagerLoad attributes found on the properties
@@ -435,7 +431,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
         private static DbQuery<TDerived> GenerateBaseQuery<TDerived>(DbSet<TDerived> Set) where TDerived : T
         {
-            
             List<string> includes = IncludeStrings(typeof(TDerived));
 
             DbQuery<TDerived> dbQuery = Set;
@@ -474,16 +469,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             }
         }
 
-        /// <summary>
-        /// Returns a subset including only the derived type from the underlying persistence context
-        /// </summary>
-        /// <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
-        /// <returns>A subset including only the derived type from the underlying persistence context</returns>
-        public override IQueryable<TDerived> OfType<TDerived>()
-        {
-            return GenerateBaseQuery(this.DbContext.Set<TDerived>());
-        }
-
         // To detect redundant calls
         // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         // ~PersistenceContext() {
@@ -500,8 +485,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// </summary>
     public class WriteContextBag
     {
-        #region Indexers
-
         /// <summary>
         /// Accesses contexts in this bag that are associated with the specified DbContext
         /// </summary>
@@ -514,10 +497,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 return OpenWriteContexts[context];
             }
         }
-
-        #endregion Indexers
-
-        #region Methods
 
         internal bool ContainsKey(DbContext dbContext)
         {
@@ -534,12 +513,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return OpenWriteContexts.TryRemove(dbContext, out synchronizedCollection);
         }
 
-        #endregion Methods
-
-        #region Fields
-
         private static ConcurrentDictionary<DbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<DbContext, SynchronizedCollection<IWriteContext>>();
-
-        #endregion Fields
     }
 }
