@@ -12,6 +12,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects.DataClasses;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Linq;
@@ -55,8 +56,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         public EFPersistenceContext(DbContext dbContext, MessageBus messageBus = null) : base(typeof(T), IsValidType(dbContext, typeof(T)) ? (GenerateBaseQuery(dbContext.Set<T>())) : (new List<T>() as IQueryable<T>))
         {
             MessageBus = messageBus;
-
-            Penguin.Debugging.StaticLogger.Log(Id.ToString() + $": Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
+            if (StaticLogger.IsListening)
+            {
+                Penguin.Debugging.StaticLogger.Log(Id.ToString() + $": Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
+            }
 
             this.DbContext = dbContext;
 
@@ -116,7 +119,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 OpenWriteContexts.TryAdd(DbContext, new SynchronizedCollection<IWriteContext>());
             }
 
-            StaticLogger.Log(Id.ToString() + $": Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+            if (StaticLogger.IsListening)
+            {
+                StaticLogger.Log(Id.ToString() + $": Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+            }
 
             if (OpenWriteContexts[this.DbContext].Count == 0)
             {
@@ -136,9 +142,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public override void CancelWrite()
         {
-            StaticLogger.Log(Id.ToString() + $": Cancelling write. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+            if (StaticLogger.IsListening)
+            {
+                StaticLogger.Log(Id.ToString() + $": Cancelling write. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+            }
 
             this.DetachAll();
+
+            DbContext.Dispose();
 
             this.WriteEnabled = false;
 
@@ -156,13 +167,20 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 if (this.WriteEnabled)
                 {
-                    StaticLogger.Log(Id.ToString() + $": Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                    if (StaticLogger.IsListening)
+                    {
+                        StaticLogger.Log(Id.ToString() + $": Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                    }
+
                     this.DbContext.SaveChanges();
                 }
                 else
                 {
-                    StaticLogger.Log(Id.ToString() + $": Write not enabled. Can not save changes", StaticLogger.LoggingLevel.Final);
-                    throw new UnauthorizedAccessException("This context has not been enabled for writing");
+                    if (StaticLogger.IsListening)
+                    {
+                        StaticLogger.Log(Id.ToString() + $": Write not enabled. Can not save changes", StaticLogger.LoggingLevel.Final);
+                    }
+                        throw new UnauthorizedAccessException("This context has not been enabled for writing");
                 }
             }
         }
@@ -178,8 +196,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 if (this.WriteEnabled)
                 {
-                    StaticLogger.Log(Id.ToString() + $": Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
-                    await this.DbContext.SaveChangesAsync();
+                    if (StaticLogger.IsListening)
+                    {
+                        StaticLogger.Log(Id.ToString() + $": Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                    }
+                        await this.DbContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -247,11 +268,15 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                 foreach (DbEntityEntry databaseEntityEntry in allEntries)
                 {
-                    if (databaseEntityEntry.Entity != null)
+                    if ((databaseEntityEntry.Entity as IEntityWithChangeTracker) != null)
                     {
-                        StaticLogger.Log(Id.ToString() + $": Detatching entity of type {databaseEntityEntry.Entity.GetType().ToString()}", StaticLogger.LoggingLevel.Call);
-                        databaseEntityEntry.State = EntityState.Detached;
-                    }
+                        if (StaticLogger.IsListening)
+                        {
+                            StaticLogger.Log(Id.ToString() + $": Detatching entity of type {databaseEntityEntry.Entity.GetType().ToString()}", StaticLogger.LoggingLevel.Call);
+                        }
+                        
+                        ((IEntityWithChangeTracker)databaseEntityEntry.Entity).SetChangeTracker(null);
+                    } 
                 }
             }
         }
@@ -264,11 +289,16 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             OpenWriteContexts[this.DbContext].Remove(context);
 
-            StaticLogger.Log(Id.ToString() + $": Ending write at depth of {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+            if (StaticLogger.IsListening)
+            {
+                StaticLogger.Log(Id.ToString() + $": Ending write at depth of {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+            }
 
             if (OpenWriteContexts[this.DbContext].Count == 0)
             {
                 this.DetachAll();
+
+                DbContext.Dispose();
 
                 this.WriteEnabled = false;
 
