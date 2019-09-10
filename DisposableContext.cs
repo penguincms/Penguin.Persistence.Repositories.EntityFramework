@@ -1,6 +1,6 @@
 ﻿using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Models.Base;
-using Penguin.Persistence.EntityFramework;
+using Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
 {
@@ -13,7 +13,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// Creates a new instance of this context
         /// </summary>
         /// <param name="connectionString">The connection string to use during construction</param>
-        public DisposableContext(string connectionString) : base(new DynamicContext(new PersistenceConnectionInfo(connectionString)))
+        public DisposableContext(string connectionString) : base(new SingleUseDbContext(new PersistenceConnectionInfo(connectionString)))
         {
         }
     }
