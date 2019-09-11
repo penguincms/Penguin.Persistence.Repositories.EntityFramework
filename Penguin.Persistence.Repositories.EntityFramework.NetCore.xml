@@ -228,8 +228,8 @@
         </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper">
             <summary>
-            A container that generates a new dynamic context each time the previous one is closed without disposing of the originals 
-            To maintain lazyloading 
+            A container that generates a new dynamic context each time the previous one is closed without disposing of the originals
+            To maintain lazyloading
             </summary>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.GraveYard">
