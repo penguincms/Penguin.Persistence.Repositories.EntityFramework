@@ -106,7 +106,22 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             DbSet<T> set = this.DbContext.Set<T>();
 
-            set.AddOrUpdate(o);
+            List<T> toSave = new List<T>(o.Length);
+
+            foreach(T k in o)
+            {
+                int Key = k._Id;
+                T old;
+                if(Key == 0 || (old = set.Find(Key)) == null)
+                {
+                    toSave.Add(k);
+                } else
+                {
+                    DbContext.Entry(old).CurrentValues.SetValues(k);
+                    toSave.Add(old);
+                }
+            }
+            set.AddOrUpdate(toSave.ToArray());
         }
 
         /// <summary>
@@ -171,9 +186,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                         this.DbContext.SaveChanges();
                     } catch(Exception ex)
                     {
-                        this.DbContext.Dispose();
-
                         this.OpenWriteContexts.Clear(this.DbContext);
+
+                        this.DbContext.Dispose();
 
                         ExceptionDispatchInfo.Capture(ex).Throw();
                     }

@@ -50,5 +50,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// Checks to see if the instance is still valid
         /// </summary>
         public abstract bool IsDisposed { get; }
+
+        public DbEntityEntry Entry(object entity) => DbContext.Entry(entity);
     }
 }

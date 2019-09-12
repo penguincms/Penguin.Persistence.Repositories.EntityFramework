@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Threading.Tasks;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces
@@ -23,6 +24,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfac
         void SaveChanges();
 
         bool IsDisposed { get; }
+
+        DbEntityEntry Entry(object entity);
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }
