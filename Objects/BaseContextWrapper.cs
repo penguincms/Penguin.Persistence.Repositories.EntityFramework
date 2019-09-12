@@ -39,12 +39,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public Task SaveChangesAsync() => DbContext.SaveChangesAsync();
+        public virtual Task SaveChangesAsync() => DbContext.SaveChangesAsync();
 
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public void SaveChanges() => DbContext.SaveChanges();
+        public virtual void SaveChanges() => DbContext.SaveChanges();
 
         /// <summary>
         /// Checks to see if the instance is still valid

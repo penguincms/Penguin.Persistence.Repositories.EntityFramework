@@ -17,6 +17,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
@@ -165,7 +166,17 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                         StaticLogger.Log(Id.ToString() + $": Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                     }
 
-                    this.DbContext.SaveChanges();
+                    try
+                    {
+                        this.DbContext.SaveChanges();
+                    } catch(Exception ex)
+                    {
+                        this.DbContext.Dispose();
+
+                        this.OpenWriteContexts.Clear(this.DbContext);
+
+                        ExceptionDispatchInfo.Capture(ex).Throw();
+                    }
                 }
                 else
                 {
@@ -468,6 +479,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         internal bool TryRemove(IDbContext dbContext, out SynchronizedCollection<IWriteContext> synchronizedCollection)
         {
             return OpenWriteContexts.TryRemove(dbContext, out synchronizedCollection);
+        }
+
+        internal void Clear(IDbContext dbContext)
+        {
+            OpenWriteContexts.TryRemove(dbContext, out _);
         }
 
         private static ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();

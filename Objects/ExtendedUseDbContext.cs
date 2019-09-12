@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
+using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 {
@@ -56,6 +58,32 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         {
             GraveYard.Add(CurrentContext);
             CurrentContext = null;
+        }
+
+        public override void SaveChanges()
+        {
+            try
+            {
+                base.SaveChanges();
+            } catch(Exception ex)
+            {
+                CurrentContext = null;
+                ExceptionDispatchInfo.Capture(ex).Throw();
+            }
+        }
+
+        public override Task SaveChangesAsync()
+        {
+            try
+            {
+                return base.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                CurrentContext = null;
+                ExceptionDispatchInfo.Capture(ex).Throw();
+                return Task.CompletedTask;
+            }
         }
     }
 }
