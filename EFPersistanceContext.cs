@@ -106,7 +106,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             DbSet<T> set = this.DbContext.Set<T>();
 
-            List<T> toSave = new List<T>(o.Length);
+            List<T> newObjects = new List<T>(o.Length);
 
             foreach(T k in o)
             {
@@ -114,14 +114,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 T old;
                 if(Key == 0 || (old = set.Find(Key)) == null)
                 {
-                    toSave.Add(k);
+                    newObjects.Add(k);
                 } else
                 {
                     DbContext.Entry(old).CurrentValues.SetValues(k);
-                    toSave.Add(old);
                 }
             }
-            set.AddOrUpdate(toSave.ToArray());
+
+            set.AddOrUpdate(newObjects.ToArray());
         }
 
         /// <summary>
