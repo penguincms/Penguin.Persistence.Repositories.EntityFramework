@@ -117,7 +117,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     newObjects.Add(k);
                 } else
                 {
-                    DbContext.Entry(old).CurrentValues.SetValues(k);
+                    k.Populate(old);
                 }
             }
 
