@@ -60,6 +60,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
             CurrentContext = null;
         }
 
+        /// <summary>
+        /// Saves the changes on the underlying context
+        /// </summary>
         public override void SaveChanges()
         {
             try
@@ -72,6 +75,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
             }
         }
 
+        /// <summary>
+        /// Saves the changes on the underlying context
+        /// </summary>
+        /// <returns>A task for the Async</returns>
         public override Task SaveChangesAsync()
         {
             try

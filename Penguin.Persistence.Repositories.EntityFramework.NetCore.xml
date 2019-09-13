@@ -226,6 +226,13 @@
             Checks to see if the instance is still valid
             </summary>
         </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.Entry(System.Object)">
+            <summary>
+            Retrieves an entity entry from the underlying context
+            </summary>
+            <param name="entity">The entity to get the entry for</param>
+            <returns>The entity entry for the object</returns>
+        </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper">
             <summary>
             A container that generates a new dynamic context each time the previous one is closed without disposing of the originals
@@ -257,6 +264,17 @@
             <summary>
             Pushes the last context to the graveyard and sets the reference to null so a new one can be instantiated if needed
             </summary>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.SaveChanges">
+            <summary>
+            Saves the changes on the underlying context
+            </summary>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.SaveChangesAsync">
+            <summary>
+            Saves the changes on the underlying context
+            </summary>
+            <returns>A task for the Async</returns>
         </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext">
             <summary>

@@ -51,6 +51,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// </summary>
         public abstract bool IsDisposed { get; }
 
+        /// <summary>
+        /// Retrieves an entity entry from the underlying context
+        /// </summary>
+        /// <param name="entity">The entity to get the entry for</param>
+        /// <returns>The entity entry for the object</returns>
         public DbEntityEntry Entry(object entity) => DbContext.Entry(entity);
     }
 }
