@@ -452,6 +452,16 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             }
         }
 
+        public override T[] Get(object[] Keys)
+        {
+            return Keys.Select(k => this.Get(k)).ToArray();
+        }
+
+        public override T Get(object Key)
+        {
+            return this.DbContext.Set<T>().Find(Key);
+        }
+
         // To detect redundant calls
         // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         // ~PersistenceContext() {

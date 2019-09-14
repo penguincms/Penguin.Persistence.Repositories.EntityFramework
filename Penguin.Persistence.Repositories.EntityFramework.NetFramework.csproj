@@ -58,8 +58,8 @@
     <Reference Include="Penguin.Messaging.Logging, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Messaging.Logging.2.0.6\lib\netstandard2.0\Penguin.Messaging.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Penguin.Persistence.Abstractions, Version=1.3.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Persistence.Abstractions.1.3.5\lib\netstandard2.0\Penguin.Persistence.Abstractions.dll</HintPath>
+    <Reference Include="Penguin.Persistence.Abstractions, Version=1.3.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Penguin.Persistence.Abstractions.1.3.6\lib\netstandard2.0\Penguin.Persistence.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Penguin.Persistence.EntityFramework, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Persistence.EntityFramework.NetFramework.csproj.1.2.5\lib\net471\Penguin.Persistence.EntityFramework.dll</HintPath>
