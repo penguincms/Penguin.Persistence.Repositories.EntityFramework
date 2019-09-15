@@ -452,11 +452,21 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             }
         }
 
+        /// <summary>
+        /// Gets an array of objects by their primary keys
+        /// </summary>
+        /// <param name="Keys">The keys to search for</param>
+        /// <returns>The array of objects with matching keys</returns>
         public override T[] Get(object[] Keys)
         {
             return Keys.Select(k => this.Get(k)).ToArray();
         }
 
+        /// <summary>
+        /// Gets an object by its primary key
+        /// </summary>
+        /// <param name="Key">The key to search for</param>
+        /// <returns>An object (or null) with a matching key</returns>
         public override T Get(object Key)
         {
             return this.DbContext.Set<T>().Find(Key);
