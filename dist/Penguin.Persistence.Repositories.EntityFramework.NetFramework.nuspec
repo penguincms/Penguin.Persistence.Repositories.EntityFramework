@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Penguin.Persistence.Repositories.EntityFramework.NetFramework</id>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <authors>MrJackSpade</authors>
     <owners>MrJackSpade</owners>
     <projectUrl>http://www.penguinms.com/Nuget</projectUrl>
@@ -23,7 +23,7 @@
 	  <dependency id="Penguin.Reflection.Extensions" version="3.0.0" />
 	  <dependency id="Penguin.Messaging.Abstractions" version="2.0.6" />
 	  <dependency id="Penguin.Messaging.Core" version="3.0.0" />
-	  <dependency id="Penguin.Messaging.Logging" version="2.0.6" />
+	  <dependency id="Penguin.Messaging.Logging" version="3.0.0" />
 	  <dependency id="Penguin.Persistence.EntityFramework.NetFramework" version="2.0.0" />
 	  <dependency id="System.ServiceModel.Primitives" version="4.5.3" />
     </dependencies>
