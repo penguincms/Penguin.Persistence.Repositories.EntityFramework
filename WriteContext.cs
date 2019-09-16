@@ -62,8 +62,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     this.Context.Commit(this);
                 }
 
-                this.DisableWrite();
-
                 this.Context.EndWrite(this);
 
                 disposedValue = true;
