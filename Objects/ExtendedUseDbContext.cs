@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.Objects
@@ -12,30 +11,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
     /// </summary>
     public class ExtendedUseDbContextWrapper : BaseContextWrapper
     {
-        /// <summary>
-        /// Contains the "Disposed" contexts
-        /// </summary>
-        protected Collection<DbContext> GraveYard { get; set; }
-
-        /// <summary>
-        /// Accesses the current DbContext or creates a new one
-        /// </summary>
-        protected override DbContext DbContext
-        {
-            get
-            {
-                if (CurrentContext is null)
-                {
-                    CurrentContext = ServiceProvider.GetService(typeof(DbContext)) as DbContext;
-                }
-
-                return CurrentContext;
-            }
-        }
-
-        private IServiceProvider ServiceProvider { get; set; }
-        private DbContext CurrentContext { get; set; }
-
         /// <summary>
         /// Always returns false since there is always a context
         /// </summary>
@@ -68,10 +43,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
             try
             {
                 base.SaveChanges();
-            } catch(Exception ex)
+            }
+            catch (Exception)
             {
                 CurrentContext = null;
-                ExceptionDispatchInfo.Capture(ex).Throw();
+                throw;
             }
         }
 
@@ -85,12 +61,35 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
             {
                 return base.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 CurrentContext = null;
-                ExceptionDispatchInfo.Capture(ex).Throw();
-                return Task.CompletedTask;
+                throw;
             }
         }
+
+        /// <summary>
+        /// Accesses the current DbContext or creates a new one
+        /// </summary>
+        protected override DbContext DbContext
+        {
+            get
+            {
+                if (CurrentContext is null)
+                {
+                    CurrentContext = ServiceProvider.GetService(typeof(DbContext)) as DbContext;
+                }
+
+                return CurrentContext;
+            }
+        }
+
+        /// <summary>
+        /// Contains the "Disposed" contexts
+        /// </summary>
+        protected Collection<DbContext> GraveYard { get; }
+
+        private DbContext CurrentContext { get; set; }
+        private IServiceProvider ServiceProvider { get; set; }
     }
 }

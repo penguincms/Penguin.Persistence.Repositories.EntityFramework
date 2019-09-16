@@ -15,9 +15,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
@@ -26,6 +26,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// A persistence context that uses Entity Framework as its backing for data
     /// </summary>
     /// <typeparam name="T">The type of the object contained in this context</typeparam>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "<Pending>")]
     public class EFPersistenceContext<T> : PersistenceContext<T> where T : KeyedObject
     {
         /// <summary>
@@ -54,12 +55,15 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         /// <param name="dbContext">The underlying DbContext to use as the data source</param>
         /// <param name="messageBus">An optional message bus for publishing persistence events</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>")]
         public EFPersistenceContext(IDbContext dbContext, MessageBus messageBus = null) : base(typeof(T), IsValidType(dbContext, typeof(T)) ? (GenerateBaseQuery(dbContext.Set<T>())) : (new List<T>() as IQueryable<T>))
         {
+            Contract.Requires(dbContext != null);
+
             MessageBus = messageBus;
             if (StaticLogger.IsListening)
             {
-                Penguin.Debugging.StaticLogger.Log(Id.ToString() + $": Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
+                Penguin.Debugging.StaticLogger.Log($"{Id}: Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
             }
 
             this.DbContext = dbContext;
@@ -108,14 +112,15 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             List<T> newObjects = new List<T>(o.Length);
 
-            foreach(T k in o)
+            foreach (T k in o)
             {
                 int Key = k._Id;
                 T old;
-                if(Key == 0 || (old = set.Find(Key)) == null)
+                if (Key == 0 || (old = set.Find(Key)) == null)
                 {
                     newObjects.Add(k);
-                } else
+                }
+                else
                 {
                     k.Populate(old);
                 }
@@ -137,7 +142,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log(Id.ToString() + $": Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                StaticLogger.Log($"{Id}: Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
             }
 
             this.WriteEnabled = true;
@@ -155,7 +160,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log(Id.ToString() + $": Cancelling write. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+                StaticLogger.Log($"{Id}: Cancelling write. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
             }
 
             DbContext.Dispose();
@@ -178,28 +183,29 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 {
                     if (StaticLogger.IsListening)
                     {
-                        StaticLogger.Log(Id.ToString() + $": Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                        StaticLogger.Log($"{Id}: Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                     }
 
                     try
                     {
                         this.DbContext.SaveChanges();
-                    } catch(Exception ex)
+                    }
+                    catch (Exception)
                     {
                         this.OpenWriteContexts.Clear(this.DbContext);
 
                         this.DbContext.Dispose();
 
-                        ExceptionDispatchInfo.Capture(ex).Throw();
+                        throw;
                     }
                 }
                 else
                 {
                     if (StaticLogger.IsListening)
                     {
-                        StaticLogger.Log(Id.ToString() + $": Write not enabled. Can not save changes", StaticLogger.LoggingLevel.Final);
+                        StaticLogger.Log($"{Id}: Write not enabled. Can not save changes", StaticLogger.LoggingLevel.Final);
                     }
-                    throw new UnauthorizedAccessException("This context has not been enabled for writing");
+                    throw new UnauthorizedAccessException(NotEnableMessage);
                 }
             }
         }
@@ -217,13 +223,13 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 {
                     if (StaticLogger.IsListening)
                     {
-                        StaticLogger.Log(Id.ToString() + $": Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                        StaticLogger.Log($"{Id}: Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                     }
-                    await this.DbContext.SaveChangesAsync();
+                    await this.DbContext.SaveChangesAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    throw new UnauthorizedAccessException("This context has not been enabled for writing");
+                    throw new UnauthorizedAccessException(NotEnableMessage);
                 }
             }
         }
@@ -284,7 +290,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log(Id.ToString() + $": Ending write at depth of {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+                StaticLogger.Log($"{Id}: Ending write at depth of {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
             }
 
             if (OpenWriteContexts[this.DbContext].Count == 0)
@@ -298,12 +304,42 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         /// <summary>
+        /// Gets an array of objects by their primary keys
+        /// </summary>
+        /// <param name="Keys">The keys to search for</param>
+        /// <returns>The array of objects with matching keys</returns>
+        public override T[] Find(object[] Keys)
+        {
+            return Keys.Select(k => this.Find(k)).ToArray();
+        }
+
+        /// <summary>
+        /// Gets an object by its primary key
+        /// </summary>
+        /// <param name="Key">The key to search for</param>
+        /// <returns>An object (or null) with a matching key</returns>
+        public override T Find(object Key)
+        {
+            return this.DbContext.Set<T>().Find(Key);
+        }
+
+        /// <summary>
         /// Returns an immutable array of all writecontexts currently open on this persistence context
         /// </summary>
         /// <returns></returns>
         public override IWriteContext[] GetWriteContexts()
         {
             return this.OpenWriteContexts[this.DbContext].ToArray();
+        }
+
+        /// <summary>
+        /// Returns a subset including only the derived type from the underlying persistence context
+        /// </summary>
+        /// <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
+        /// <returns>A subset including only the derived type from the underlying persistence context</returns>
+        public override IQueryable<TDerived> OfType<TDerived>()
+        {
+            return GenerateBaseQuery(this.DbContext.Set<TDerived>());
         }
 
         /// <summary>
@@ -325,16 +361,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         public override IWriteContext WriteContext()
         {
             return new WriteContext(this);
-        }
-
-        /// <summary>
-        /// Returns a subset including only the derived type from the underlying persistence context
-        /// </summary>
-        /// <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
-        /// <returns>A subset including only the derived type from the underlying persistence context</returns>
-        public override IQueryable<TDerived> OfType<TDerived>()
-        {
-            return GenerateBaseQuery(this.DbContext.Set<TDerived>());
         }
 
         /// <summary>
@@ -368,12 +394,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns>A list of strings to Include while accessing the database</returns>
         protected static List<string> IncludeStrings(Stack<Type> toGenerate, string NameSpace = "", bool Recursive = true, int? depth = null)
         {
+            Contract.Requires(toGenerate != null);
+
             List<string> ToReturn = new List<string>();
 
             if (depth == 0)
             { return ToReturn; }
 
-            List<PropertyInfo> EagerLoadProperties = Cache.GetProperties(toGenerate.Peek()).Where(p => Cache.HasAttribute<EagerLoad>(p)).ToList();
+            List<PropertyInfo> EagerLoadProperties = TypeCache.GetProperties(toGenerate.Peek()).Where(p => TypeCache.HasAttribute<EagerLoadAttribute>(p)).ToList();
 
             foreach (PropertyInfo toEagerLoad in EagerLoadProperties)
             {
@@ -382,7 +410,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                 if (Recursive)
                 {
-                    int? thisPropDepth = depth ?? Cache.GetAttribute<EagerLoad>(toEagerLoad).Depth;
+                    int? thisPropDepth = depth ?? TypeCache.GetAttribute<EagerLoadAttribute>(toEagerLoad).Depth;
 
                     if (thisPropDepth != null)
                     {
@@ -421,8 +449,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         private string Id { get; set; } = $"{Guid.NewGuid()} <{typeof(T).FullName}>";
-
         private WriteContextBag OpenWriteContexts { get; set; } = new WriteContextBag();
+        private const string NotEnableMessage = "This context has not been enabled for writing";
 
         private static DbQuery<T> GenerateBaseQuery(DbSet<T> Set) => GenerateBaseQuery<T>(Set);
 
@@ -440,6 +468,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return dbQuery;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "I dont know of any other way to get the value but to test for an error")]
         private static bool IsValidType(IDbContext holder, Type toCheck)
         {
             try
@@ -450,26 +479,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Gets an array of objects by their primary keys
-        /// </summary>
-        /// <param name="Keys">The keys to search for</param>
-        /// <returns>The array of objects with matching keys</returns>
-        public override T[] Get(object[] Keys)
-        {
-            return Keys.Select(k => this.Get(k)).ToArray();
-        }
-
-        /// <summary>
-        /// Gets an object by its primary key
-        /// </summary>
-        /// <param name="Key">The key to search for</param>
-        /// <returns>An object (or null) with a matching key</returns>
-        public override T Get(object Key)
-        {
-            return this.DbContext.Set<T>().Find(Key);
         }
 
         // To detect redundant calls
@@ -493,12 +502,18 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         /// <param name="context">The DbContext to use when getting the WriteContexts</param>
         /// <returns></returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "<Pending>")]
         public SynchronizedCollection<IWriteContext> this[IDbContext context]
         {
             get
             {
                 return OpenWriteContexts[context];
             }
+        }
+
+        internal void Clear(IDbContext dbContext)
+        {
+            OpenWriteContexts.TryRemove(dbContext, out _);
         }
 
         internal bool ContainsKey(IDbContext dbContext)
@@ -516,11 +531,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return OpenWriteContexts.TryRemove(dbContext, out synchronizedCollection);
         }
 
-        internal void Clear(IDbContext dbContext)
-        {
-            OpenWriteContexts.TryRemove(dbContext, out _);
-        }
-
-        private static ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();
+        private static readonly ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();
     }
 }

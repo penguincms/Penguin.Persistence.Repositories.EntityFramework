@@ -12,14 +12,36 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
     public abstract class BaseContextWrapper : IDbContext
     {
         /// <summary>
-        /// The current DbContext instance being referenced
+        /// Forwarded to current instance
         /// </summary>
-        protected abstract DbContext DbContext { get; }
+        public DbChangeTracker ChangeTracker => DbContext.ChangeTracker;
+
+        /// <summary>
+        /// Checks to see if the instance is still valid
+        /// </summary>
+        public abstract bool IsDisposed { get; }
+
+        /// <summary>
+        /// Handles the disposal logic for the current instance
+        /// </summary>
+        public abstract void Dispose();
+
+        /// <summary>
+        /// Retrieves an entity entry from the underlying context
+        /// </summary>
+        /// <param name="entity">The entity to get the entry for</param>
+        /// <returns>The entity entry for the object</returns>
+        public DbEntityEntry Entry(object entity) => DbContext.Entry(entity);
 
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public DbChangeTracker ChangeTracker => DbContext.ChangeTracker;
+        public virtual void SaveChanges() => DbContext.SaveChanges();
+
+        /// <summary>
+        /// Forwarded to current instance
+        /// </summary>
+        public virtual Task SaveChangesAsync() => DbContext.SaveChangesAsync();
 
         /// <summary>
         /// Forwarded to current instance
@@ -32,30 +54,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         public DbSet Set(Type toCheck) => DbContext.Set(toCheck);
 
         /// <summary>
-        /// Handles the disposal logic for the current instance
+        /// The current DbContext instance being referenced
         /// </summary>
-        public abstract void Dispose();
-
-        /// <summary>
-        /// Forwarded to current instance
-        /// </summary>
-        public virtual Task SaveChangesAsync() => DbContext.SaveChangesAsync();
-
-        /// <summary>
-        /// Forwarded to current instance
-        /// </summary>
-        public virtual void SaveChanges() => DbContext.SaveChanges();
-
-        /// <summary>
-        /// Checks to see if the instance is still valid
-        /// </summary>
-        public abstract bool IsDisposed { get; }
-
-        /// <summary>
-        /// Retrieves an entity entry from the underlying context
-        /// </summary>
-        /// <param name="entity">The entity to get the entry for</param>
-        /// <returns>The entity entry for the object</returns>
-        public DbEntityEntry Entry(object entity) => DbContext.Entry(entity);
+        protected abstract DbContext DbContext { get; }
     }
 }

@@ -13,21 +13,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects
     public class SingleUseDbContext : BaseContextWrapper
     {
         /// <summary>
-        /// The backing DbContext
-        /// </summary>
-        protected override DbContext DbContext
-        {
-            get
-            {
-                return CurrentContext;
-            }
-        }
-
-        private DbContext CurrentContext { get; set; }
-
-        private bool PreventDispose { get; set; }
-
-        /// <summary>
         /// Checks if the underlying context has been disposed
         /// </summary>
         public override bool IsDisposed
@@ -85,5 +70,20 @@ namespace Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects
                 DbContext.Dispose();
             }
         }
+
+        /// <summary>
+        /// The backing DbContext
+        /// </summary>
+        protected override DbContext DbContext
+        {
+            get
+            {
+                return CurrentContext;
+            }
+        }
+
+        private DbContext CurrentContext { get; set; }
+
+        private bool PreventDispose { get; set; }
     }
 }

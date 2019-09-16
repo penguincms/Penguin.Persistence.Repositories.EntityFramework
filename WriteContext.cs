@@ -1,5 +1,5 @@
 ﻿using Penguin.Persistence.Abstractions.Interfaces;
-using System.Threading.Tasks;
+using System;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
 {
@@ -42,39 +42,47 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public void Dispose()
         {
-            disposed = true;
-
-            if (this.Async)
-            {
-                this.Context.Commit(this);
-            }
-            else
-            {
-                this.Context.Commit(this);
-            }
-
-            this.DisableWrite();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        private bool disposed = false;
+        /// <summary>
+        /// Disposes of this WriteContext and attempts to persist any changes
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (this.Async)
+                {
+                    this.Context.Commit(this);
+                }
+                else
+                {
+                    this.Context.Commit(this);
+                }
 
-        private Task<int> LastAsync { get; set; }
+                this.DisableWrite();
+
+                this.Context.EndWrite(this);
+
+                disposedValue = true;
+            }
+        }
+
+        private bool disposedValue = false;
 
         private void DisableWrite() => this.Context.EndWrite(this);
 
         private void EnableWrite() => this.Context.BeginWrite(this);
 
+        // To detect redundant calls
         /// <summary>
         /// Disposes of this WriteContext and attempts to persist any changes
         /// </summary>
         ~WriteContext()
         {
-            if (!disposed)
-            {
-                this.Context.EndWrite(this);
-            }
-
-            disposed = true;
+            Dispose(false);
         }
     }
 }

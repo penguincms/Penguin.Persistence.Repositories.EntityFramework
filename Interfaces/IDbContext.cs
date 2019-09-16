@@ -26,6 +26,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfac
         bool IsDisposed { get; }
 
         DbEntityEntry Entry(object entity);
+
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }

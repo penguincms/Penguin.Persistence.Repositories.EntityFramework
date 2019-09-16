@@ -102,11 +102,32 @@
             </summary>
             <param name="context"></param>
         </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Find(System.Object[])">
+            <summary>
+            Gets an array of objects by their primary keys
+            </summary>
+            <param name="Keys">The keys to search for</param>
+            <returns>The array of objects with matching keys</returns>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Find(System.Object)">
+            <summary>
+            Gets an object by its primary key
+            </summary>
+            <param name="Key">The key to search for</param>
+            <returns>An object (or null) with a matching key</returns>
+        </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.GetWriteContexts">
             <summary>
             Returns an immutable array of all writecontexts currently open on this persistence context
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.OfType``1">
+            <summary>
+            Returns a subset including only the derived type from the underlying persistence context
+            </summary>
+            <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
+            <returns>A subset including only the derived type from the underlying persistence context</returns>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Update(`0[])">
             <summary>
@@ -125,13 +146,6 @@
             Generates a new WriteContext capable of opening this PersistenceContext
             </summary>
             <returns>A new WriteContext capable of opening this PersistenceContext</returns>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.OfType``1">
-            <summary>
-            Returns a subset including only the derived type from the underlying persistence context
-            </summary>
-            <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
-            <returns>A subset including only the derived type from the underlying persistence context</returns>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.MessageBus">
             <summary>
@@ -163,20 +177,6 @@
             </summary>
             <param name="o">The objects to update</param>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Get(System.Object[])">
-            <summary>
-            Gets an array of objects by their primary keys
-            </summary>
-            <param name="Keys">The keys to search for</param>
-            <returns>The array of objects with matching keys</returns>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Get(System.Object)">
-            <summary>
-            Gets an object by its primary key
-            </summary>
-            <param name="Key">The key to search for</param>
-            <returns>An object (or null) with a matching key</returns>
-        </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.WriteContextBag">
             <summary>
             Generic types dont share static properties so this holder
@@ -200,12 +200,34 @@
             Abstract context wrapper class that forwards needed properties to the internal DB context
             </summary>
         </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.DbContext">
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.ChangeTracker">
             <summary>
-            The current DbContext instance being referenced
+            Forwarded to current instance
             </summary>
         </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.ChangeTracker">
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.IsDisposed">
+            <summary>
+            Checks to see if the instance is still valid
+            </summary>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.Dispose">
+            <summary>
+            Handles the disposal logic for the current instance
+            </summary>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.Entry(System.Object)">
+            <summary>
+            Retrieves an entity entry from the underlying context
+            </summary>
+            <param name="entity">The entity to get the entry for</param>
+            <returns>The entity entry for the object</returns>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.SaveChanges">
+            <summary>
+            Forwarded to current instance
+            </summary>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.SaveChangesAsync">
             <summary>
             Forwarded to current instance
             </summary>
@@ -220,47 +242,15 @@
             Forwarded to current instance
             </summary>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.Dispose">
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.DbContext">
             <summary>
-            Handles the disposal logic for the current instance
+            The current DbContext instance being referenced
             </summary>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.SaveChangesAsync">
-            <summary>
-            Forwarded to current instance
-            </summary>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.SaveChanges">
-            <summary>
-            Forwarded to current instance
-            </summary>
-        </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.IsDisposed">
-            <summary>
-            Checks to see if the instance is still valid
-            </summary>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.Entry(System.Object)">
-            <summary>
-            Retrieves an entity entry from the underlying context
-            </summary>
-            <param name="entity">The entity to get the entry for</param>
-            <returns>The entity entry for the object</returns>
         </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper">
             <summary>
             A container that generates a new dynamic context each time the previous one is closed without disposing of the originals
             To maintain lazyloading
-            </summary>
-        </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.GraveYard">
-            <summary>
-            Contains the "Disposed" contexts
-            </summary>
-        </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.DbContext">
-            <summary>
-            Accesses the current DbContext or creates a new one
             </summary>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.IsDisposed">
@@ -290,14 +280,19 @@
             </summary>
             <returns>A task for the Async</returns>
         </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.DbContext">
+            <summary>
+            Accesses the current DbContext or creates a new one
+            </summary>
+        </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.GraveYard">
+            <summary>
+            Contains the "Disposed" contexts
+            </summary>
+        </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext">
             <summary>
             Wraps a DbContext so that it is disposed of when the WriteContext closes
-            </summary>
-        </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.DbContext">
-            <summary>
-            The backing DbContext
             </summary>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.IsDisposed">
@@ -322,6 +317,11 @@
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.Dispose">
             <summary>
             Requests that the underlying context be disposed
+            </summary>
+        </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.DbContext">
+            <summary>
+            The backing DbContext
             </summary>
         </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.WriteContext">
@@ -351,6 +351,11 @@
             </summary>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.WriteContext.Dispose">
+            <summary>
+            Disposes of this WriteContext and attempts to persist any changes
+            </summary>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.WriteContext.Dispose(System.Boolean)">
             <summary>
             Disposes of this WriteContext and attempts to persist any changes
             </summary>
