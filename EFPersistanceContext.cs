@@ -41,7 +41,29 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             get
             {
-                return IsValidType(this.DbContext, typeof(T));
+                if (!isValid.HasValue)
+                {
+                    isValid = IsValidType(this.DbContext, typeof(T));
+                }
+
+                return isValid.Value;
+            }
+        }
+
+        private bool? isValid { get; set; }
+
+        /// <summary>
+        /// Returns an IQueriable that accesses the current DbSet
+        /// </summary>
+        protected override IQueryable<T> PrimaryDataSource
+        {
+            get
+            {
+                return IsValid ? (GenerateBaseQuery(DbContext.Set<T>())) : new List<T>() as IQueryable<T>;
+            }
+            set
+            {
+                 
             }
         }
 
@@ -56,7 +78,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="dbContext">The underlying DbContext to use as the data source</param>
         /// <param name="messageBus">An optional message bus for publishing persistence events</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>")]
-        public EFPersistenceContext(IDbContext dbContext, MessageBus messageBus = null) : base(typeof(T), IsValidType(dbContext, typeof(T)) ? (GenerateBaseQuery(dbContext.Set<T>())) : (new List<T>() as IQueryable<T>))
+        public EFPersistenceContext(IDbContext dbContext, MessageBus messageBus = null) : base(typeof(T), null)
         {
             Contract.Requires(dbContext != null);
 

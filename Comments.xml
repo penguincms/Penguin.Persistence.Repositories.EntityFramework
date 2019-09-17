@@ -31,6 +31,11 @@
             If true, this context has access to a valid DbSet T  on the underlying provider
             </summary>
         </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.PrimaryDataSource">
+            <summary>
+            Returns an IQueriable that accesses the current DbSet
+            </summary>
+        </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.WriteEnabled">
             <summary>
             If true, this context has a valid open WriteContext
