@@ -4,3 +4,4 @@
 /bin
 *.nupkg
 /dist/*.nupkg
+*.user
