@@ -1,14 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="Penguin.Projects.Shared\Penguin.Projects.Shared.csproj" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://github.com/penguincms/Penguin.Persistence.Repositories.EntityFramework.NetFramework</PackageProjectUrl>
-    <PackageIconUrl>http://www.penguinms.com/client/images/pg.png</PackageIconUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Version>3.0.1</Version>
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
   </PropertyGroup>
@@ -39,17 +32,6 @@
   </ItemGroup>
 
  <ItemGroup>
-    <None Include="License.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-
- <ItemGroup>
-   <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4">
-     <PrivateAssets>all</PrivateAssets>
-     <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-   </PackageReference>
    <PackageReference Include="Penguin.Debugging" Version="2.0.0" />
    <PackageReference Include="Penguin.Entities" Version="2.0.0" />
    <PackageReference Include="Penguin.Messaging.Logging" Version="2.0.6" />
@@ -61,12 +43,4 @@
    <PackageReference Include="Z.EntityFramework.Classic.Community" Version="7.1.0" />
    <PackageReference Include="Z.EntityFramework.Classic.SqlServerCompact" Version="7.0.13" />
  </ItemGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningsAsErrors>NU1605, CS1591</WarningsAsErrors>
-    <DocumentationFile>Penguin.Persistence.Repositories.EntityFramework.NetCore.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DocumentationFile>Penguin.Persistence.Repositories.EntityFramework.NetCore.xml</DocumentationFile>
-  </PropertyGroup>
 </Project>
