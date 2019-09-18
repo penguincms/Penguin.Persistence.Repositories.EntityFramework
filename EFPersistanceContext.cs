@@ -1,5 +1,6 @@
 ﻿using Penguin.Debugging;
 using Penguin.Entities;
+using Penguin.Extensions.Strings;
 using Penguin.Messaging.Core;
 using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Attributes.Control;
@@ -10,6 +11,7 @@ using Penguin.Reflection;
 using Penguin.Reflection.Abstractions;
 using Penguin.Reflection.Extensions;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -342,7 +344,62 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns>An object (or null) with a matching key</returns>
         public override T Find(object Key)
         {
-            return this.DbContext.Set<T>().Find(Key);
+            T toReturn = this.DbContext.Set<T>().Find(Key);
+
+
+            List<string> includes = IncludeStrings(typeof(T)).OrderBy(s => s.Split('.').Length - 1).Select(s => $"Root.{s}").ToList();
+
+            Dictionary<string, List<object>> navigationProperties = new Dictionary<string, List<object>>(includes.Count);
+            Dictionary<object, DbEntityEntry> EntityEntries = new Dictionary<object, DbEntityEntry>(includes.Count);
+
+            navigationProperties.Add("Root", new List<object>() { toReturn });
+            EntityEntries.Add(toReturn, this.DbContext.Entry(toReturn));
+
+            foreach (string include in includes)
+            {
+
+                List<object> objects = navigationProperties[include.ToLast('.')];
+
+                foreach (object o in objects)
+                {
+                    if (!EntityEntries.TryGetValue(include.ToLast('.'), out DbEntityEntry thisEntry))
+                    {
+                        thisEntry = this.DbContext.Entry(o);
+                    }
+
+                    DbMemberEntry memberEntry = thisEntry.Member(include.FromLast('.'));
+
+                    if (memberEntry is DbCollectionEntry dbCollectionEntry)
+                    {
+                        dbCollectionEntry.Load();
+
+                        if(memberEntry.CurrentValue != null)
+                        {
+                            if(!navigationProperties.TryGetValue(include, out List<object> collection))
+                            {
+                                collection = new List<object>();
+                                navigationProperties.Add(include, collection);
+                            }
+
+                            foreach(object io in memberEntry.CurrentValue as IEnumerable)
+                            {
+                                collection.Add(io);
+                            }
+                        }
+                    }
+                    else if (memberEntry is DbReferenceEntry dbReferenceEntry)
+                    {
+                        dbReferenceEntry.Load();
+
+                        if (memberEntry.CurrentValue != null)
+                        {
+                            navigationProperties.Add(include, new List<object>() { memberEntry.CurrentValue });
+                        }
+                    }
+                }
+            }
+
+            return toReturn;
         }
 
         /// <summary>
