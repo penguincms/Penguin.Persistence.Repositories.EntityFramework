@@ -393,7 +393,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                         if (memberEntry.CurrentValue != null)
                         {
-                            navigationProperties.Add(include, new List<object>() { memberEntry.CurrentValue });
+
+                            if (!navigationProperties.TryGetValue(include, out List<object> collection))
+                            {
+                                collection = new List<object>();
+                                navigationProperties.Add(include, collection);
+                            }
+
+                            collection.Add(memberEntry.CurrentValue);
                         }
                     }
                 }
