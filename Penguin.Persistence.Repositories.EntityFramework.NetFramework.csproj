@@ -40,8 +40,8 @@
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.SqlServerCompact.6.2.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="Penguin.Debugging, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Debugging.2.0.0\lib\netstandard2.0\Penguin.Debugging.dll</HintPath>
+    <Reference Include="Penguin.Debugging, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Penguin.Debugging.2.0.1\lib\netstandard2.0\Penguin.Debugging.dll</HintPath>
     </Reference>
     <Reference Include="Penguin.Entities, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Entities.2.0.0\lib\netstandard2.0\Penguin.Entities.dll</HintPath>
@@ -49,14 +49,17 @@
     <Reference Include="Penguin.Entities.Abstractions, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Entities.Abstractions.2.0.0\lib\netstandard2.0\Penguin.Entities.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Penguin.Extensions.Exceptions, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Penguin.Extensions.Exceptions.2.0.0\lib\netstandard2.0\Penguin.Extensions.Exceptions.dll</HintPath>
+    </Reference>
     <Reference Include="Penguin.Extensions.String, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Extensions.String.3.0.0\lib\netstandard2.0\Penguin.Extensions.String.dll</HintPath>
     </Reference>
-    <Reference Include="Penguin.Messaging.Abstractions, Version=2.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Messaging.Abstractions.2.0.6\lib\netstandard2.0\Penguin.Messaging.Abstractions.dll</HintPath>
+    <Reference Include="Penguin.Messaging.Abstractions, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Penguin.Messaging.Abstractions.2.1.0\lib\netstandard2.0\Penguin.Messaging.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Penguin.Messaging.Core, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Messaging.Core.3.0.0\lib\netstandard2.0\Penguin.Messaging.Core.dll</HintPath>
+    <Reference Include="Penguin.Messaging.Core, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Penguin.Messaging.Core.3.1.0\lib\netstandard2.0\Penguin.Messaging.Core.dll</HintPath>
     </Reference>
     <Reference Include="Penguin.Messaging.Logging, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Messaging.Logging.3.0.0\lib\netstandard2.0\Penguin.Messaging.Logging.dll</HintPath>
