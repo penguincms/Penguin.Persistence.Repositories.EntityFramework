@@ -302,6 +302,19 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     EntityState = nextEntry.State
                 });
 
+                PostEntitySaveEvent thisEvent = new PostEntitySaveEvent();
+
+                PostSaveEvents.Enqueue(thisEvent);
+
+                foreach (string propertyName in nextEntry.CurrentValues.PropertyNames)
+                {
+                    if (nextEntry.Property(propertyName).IsModified)
+                    {
+                        thisEvent.NewValues.Add(propertyName, nextEntry.Property(propertyName).CurrentValue);
+                        thisEvent.OldValues.Add(propertyName, nextEntry.Property(propertyName).OriginalValue);
+                    }
+                }
+
                 switch (nextEntry.State)
                 {
                     case EntityState.Added:
@@ -309,7 +322,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                         goto case EntityState.Modified;
 
                     case EntityState.Modified:
-                        this.MessageBus.Send(Activator.CreateInstance(typeof(Updating<>).MakeGenericType(thisType), nextEntry.Entity));
+                        this.MessageBus.Send(Activator.CreateInstance(typeof(Updating<>).MakeGenericType(thisType), nextEntry.Entity, thisEvent));
                         break;
 
                     case EntityState.Deleted:
@@ -317,19 +330,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                         break;
                     default:
                         break;
-                }
-
-                PostEntitySaveEvent thisEvent = new PostEntitySaveEvent();
-
-                PostSaveEvents.Enqueue(thisEvent);
-
-                foreach(string propertyName in nextEntry.CurrentValues.PropertyNames)
-                {
-                    if (nextEntry.Property(propertyName).IsModified)
-                    {
-                        thisEvent.NewValues.Add(propertyName, nextEntry.Property(propertyName).CurrentValue);
-                        thisEvent.OldValues.Add(propertyName, nextEntry.Property(propertyName).OriginalValue);
-                    }
                 }
 
                 processed.Add(nextEntry.Entity);
