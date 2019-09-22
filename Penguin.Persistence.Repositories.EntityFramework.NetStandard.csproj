@@ -2,8 +2,9 @@
   <Import Project="Penguin.Projects.Shared\Penguin.Projects.Shared.csproj" />
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/penguincms/Penguin.Persistence.Repositories.EntityFramework.NetFramework</PackageProjectUrl>
-    <Version>3.0.5</Version>
+    <Version>3.1.1</Version>
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
+    <RootNamespace>Penguin.Persistence.Repositories.EntityFramework</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,14 +33,15 @@
   </ItemGroup>
 
  <ItemGroup>
-   <PackageReference Include="Penguin.Debugging" Version="2.0.0" />
+   <PackageReference Include="Penguin.Debugging" Version="2.0.1" />
    <PackageReference Include="Penguin.Entities" Version="2.0.0" />
    <PackageReference Include="Penguin.Extensions.String" Version="3.0.0" />
    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.0" />
+   <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.1" />
    <PackageReference Include="Penguin.Persistence.Abstractions" Version="2.0.2" />
-   <PackageReference Include="Penguin.Persistence.EntityFramework.NetStandard" Version="2.0.0" />
+   <PackageReference Include="Penguin.Persistence.EntityFramework.NetStandard" Version="2.0.2" />
    <PackageReference Include="Penguin.Reflection" Version="4.0.0" />
-   <PackageReference Include="Penguin.Reflection.Extensions" Version="3.0.0" />
+   <PackageReference Include="Penguin.Reflection.Extensions" Version="3.0.2" />
    <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.3" />
    <PackageReference Include="Z.EntityFramework.Classic.Community" Version="7.1.0" />
    <PackageReference Include="Z.EntityFramework.Classic.SqlServerCompact" Version="7.0.13" />

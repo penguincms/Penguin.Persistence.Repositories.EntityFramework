@@ -2,11 +2,14 @@
 using Penguin.Entities;
 using Penguin.Extensions.Strings;
 using Penguin.Messaging.Core;
+using Penguin.Messaging.Persistence.Interfaces;
+using Penguin.Messaging.Persistence.Messages;
 using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Attributes.Control;
 using Penguin.Persistence.Abstractions.Interfaces;
 using Penguin.Persistence.Abstractions.Models.Base;
 using Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces;
+using Penguin.Persistence.Repositories.EntityFramework.Objects;
 using Penguin.Reflection;
 using Penguin.Reflection.Abstractions;
 using Penguin.Reflection.Extensions;
@@ -202,7 +205,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="writeContext">Any valid open write context</param>
         public override void Commit(IWriteContext writeContext)
         {
-            //We only actuall want to call commit if this is the ONLY open context (Top Level in nested call)
+            //We only actually want to call commit if this is the ONLY open context (Top Level in nested call)
             if (this.GetWriteContexts().Length == 1 && this.GetWriteContexts().Single() == writeContext)
             {
                 if (this.WriteEnabled)
@@ -214,7 +217,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                     try
                     {
+                        Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
                         this.DbContext.SaveChanges();
+                        PostCommitMessages(postSaveEvents);
                     }
                     catch (Exception)
                     {
@@ -236,6 +241,104 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             }
         }
 
+        private void PostCommitMessages(Queue<PostEntitySaveEvent> PostSaveEvents)
+        {
+            if(this.MessageBus is null)
+            {
+                return;
+            }
+
+            while (PostSaveEvents.Any())
+            {
+                PostEntitySaveEvent psEvent = PostSaveEvents.Dequeue();
+
+                Type thisType = psEvent.Entity.GetType();
+
+                switch (psEvent.EntityState)
+                {
+                    case EntityState.Added:
+                        this.MessageBus?.Send(Activator.CreateInstance(typeof(Created<>).MakeGenericType(thisType), psEvent.Entity)); ;
+                        goto case EntityState.Modified;
+
+                    case EntityState.Modified:
+                        this.MessageBus?.Send(Activator.CreateInstance(typeof(Updated<>).MakeGenericType(thisType), psEvent.Entity, psEvent));
+                        break;
+
+                    case EntityState.Deleted:
+                        this.MessageBus?.Send(Activator.CreateInstance(typeof(Deleted<>).MakeGenericType(thisType), psEvent.Entity));
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            this.MessageBus.Send(new PostCommit());
+        }
+        private Queue<PostEntitySaveEvent> PreCommitMessages()
+        {
+            if (this.MessageBus is null)
+            {
+                return new Queue<PostEntitySaveEvent>();
+            }
+
+            List<DbEntityEntry> modifiedEntities = DbContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Deleted || x.State == EntityState.Modified).ToList();
+
+            HashSet<object> processed = new HashSet<object>();
+
+            Queue<PostEntitySaveEvent> PostSaveEvents = new Queue<PostEntitySaveEvent>();
+
+            foreach(DbEntityEntry nextEntry in modifiedEntities)
+            {
+                Type thisType = TypeFactory.GetType(nextEntry.Entity);
+                // For some reason items are/were being added more than once, so we need to make sure
+                // that we dont process the same entity more than once
+                if (processed.Contains(nextEntry.Entity))
+                { continue; }
+
+                PostSaveEvents.Enqueue(new PostEntitySaveEvent()
+                {
+                    Entity = nextEntry.Entity,
+                    EntityState = nextEntry.State
+                });
+
+                switch (nextEntry.State)
+                {
+                    case EntityState.Added:
+                        this.MessageBus.Send(Activator.CreateInstance(typeof(Creating<>).MakeGenericType(thisType), nextEntry.Entity));
+                        goto case EntityState.Modified;
+
+                    case EntityState.Modified:
+                        this.MessageBus.Send(Activator.CreateInstance(typeof(Updating<>).MakeGenericType(thisType), nextEntry.Entity));
+                        break;
+
+                    case EntityState.Deleted:
+                        this.MessageBus.Send(Activator.CreateInstance(typeof(Deleting<>).MakeGenericType(thisType), nextEntry.Entity));
+                        break;
+                    default:
+                        break;
+                }
+
+                PostEntitySaveEvent thisEvent = new PostEntitySaveEvent();
+
+                PostSaveEvents.Enqueue(thisEvent);
+
+                foreach(string propertyName in nextEntry.CurrentValues.PropertyNames)
+                {
+                    if (nextEntry.Property(propertyName).IsModified)
+                    {
+                        thisEvent.NewValues.Add(propertyName, nextEntry.Property(propertyName).CurrentValue);
+                        thisEvent.OldValues.Add(propertyName, nextEntry.Property(propertyName).OriginalValue);
+                    }
+                }
+
+                processed.Add(nextEntry.Entity);
+            }
+
+            this.MessageBus.Send(new PreCommit());
+
+            return PostSaveEvents;
+        }
         /// <summary>
         /// Commits all changed entities to the database. requires a valid open write context to ensure operations are being performed in the correct scope
         /// </summary>
@@ -251,7 +354,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     {
                         StaticLogger.Log($"{Id}: Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                     }
+                    Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
                     await this.DbContext.SaveChangesAsync().ConfigureAwait(false);
+                    PostCommitMessages(postSaveEvents);
                 }
                 else
                 {
