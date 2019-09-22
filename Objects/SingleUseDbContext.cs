@@ -3,6 +3,7 @@ using Penguin.Persistence.EntityFramework;
 using Penguin.Persistence.Repositories.EntityFramework.Objects;
 using System;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Reflection;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects
@@ -68,6 +69,21 @@ namespace Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects
             if (!PreventDispose)
             {
                 DbContext.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Detatches all existing items from the context
+        /// </summary>
+        public override void BeginWrite()
+        {
+            foreach (DbEntityEntry dbEntityEntry in this.DbContext.ChangeTracker.Entries())
+            {
+
+                if (dbEntityEntry.Entity != null)
+                {
+                    dbEntityEntry.State = EntityState.Detached;
+                }
             }
         }
 

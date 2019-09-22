@@ -53,6 +53,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// </summary>
         public DbSet Set(Type toCheck) => DbContext.Set(toCheck);
 
+
+        /// <summary>
+        /// Preps the DbContext for a new write context
+        /// </summary>
+        public abstract void BeginWrite();
+
         /// <summary>
         /// The current DbContext instance being referenced
         /// </summary>

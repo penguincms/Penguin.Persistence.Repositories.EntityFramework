@@ -69,6 +69,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         }
 
         /// <summary>
+        /// Moves the existing context to the graveyard so that changes cant be saved on it
+        /// </summary>
+        public override void BeginWrite()
+        {
+            Dispose();
+        }
+
+        /// <summary>
         /// Accesses the current DbContext or creates a new one
         /// </summary>
         protected override DbContext DbContext

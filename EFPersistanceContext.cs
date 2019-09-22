@@ -169,6 +169,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 StaticLogger.Log($"{Id}: Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
             }
 
+            DbContext.BeginWrite();
+
             this.WriteEnabled = true;
 
             if (!OpenWriteContexts[this.DbContext].Contains(context))
