@@ -296,13 +296,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 if (processed.Contains(nextEntry.Entity))
                 { continue; }
 
-                PostSaveEvents.Enqueue(new PostEntitySaveEvent()
+                PostEntitySaveEvent thisEvent = new PostEntitySaveEvent()
                 {
                     Entity = nextEntry.Entity,
                     EntityState = nextEntry.State
-                });
-
-                PostEntitySaveEvent thisEvent = new PostEntitySaveEvent();
+                };
 
                 PostSaveEvents.Enqueue(thisEvent);
 
