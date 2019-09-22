@@ -2,7 +2,7 @@
   <Import Project="Penguin.Projects.Shared\Penguin.Projects.Shared.csproj" />
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/penguincms/Penguin.Persistence.Repositories.EntityFramework.NetFramework</PackageProjectUrl>
-    <Version>3.0.4</Version>
+    <Version>3.0.5</Version>
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
   </PropertyGroup>
 

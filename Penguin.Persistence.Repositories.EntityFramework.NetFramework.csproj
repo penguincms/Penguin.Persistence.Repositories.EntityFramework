@@ -76,8 +76,8 @@
     <Reference Include="Penguin.Reflection.Abstractions, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Penguin.Reflection.Abstractions.3.0.0\lib\netstandard2.0\Penguin.Reflection.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Penguin.Reflection.Extensions, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Penguin.Reflection.Extensions.3.0.0\lib\netstandard2.0\Penguin.Reflection.Extensions.dll</HintPath>
+    <Reference Include="Penguin.Reflection.Extensions, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Penguin.Reflection.Extensions.3.0.2\lib\netstandard2.0\Penguin.Reflection.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
