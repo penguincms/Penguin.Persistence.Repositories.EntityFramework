@@ -257,6 +257,22 @@
             The current DbContext instance being referenced
             </summary>
         </member>
+        <member name="T:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator">
+            <summary>
+            A class designed to initialize and update the database schema
+            </summary>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator.#ctor(Penguin.Persistence.Abstractions.PersistenceConnectionInfo)">
+            <summary>
+            Constructs a new instance of the migrator using the provided connection string
+            </summary>
+            <param name="connectionInfo"></param>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator.Migrate">
+            <summary>
+            Updates the database to reflect the current EntityFramework Schema
+            </summary>
+        </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper">
             <summary>
             A container that generates a new dynamic context each time the previous one is closed without disposing of the originals
