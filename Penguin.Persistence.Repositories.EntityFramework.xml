@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Penguin.Persistence.Repositories.EntityFramework</name>
+        <name>Penguin.Persistence.Repositories.EntityFramework.NetStandard</name>
     </assembly>
     <members>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.DisposableContext`1">
@@ -29,11 +29,6 @@
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.IsValid">
             <summary>
             If true, this context has access to a valid DbSet T  on the underlying provider
-            </summary>
-        </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.PrimaryDataSource">
-            <summary>
-            Returns an IQueriable that accesses the current DbSet
             </summary>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.WriteEnabled">
@@ -247,30 +242,9 @@
             Forwarded to current instance
             </summary>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.BeginWrite">
-            <summary>
-            Preps the DbContext for a new write context
-            </summary>
-        </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.DbContext">
             <summary>
             The current DbContext instance being referenced
-            </summary>
-        </member>
-        <member name="T:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator">
-            <summary>
-            A class designed to initialize and update the database schema
-            </summary>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator.#ctor(Penguin.Persistence.Abstractions.PersistenceConnectionInfo)">
-            <summary>
-            Constructs a new instance of the migrator using the provided connection string
-            </summary>
-            <param name="connectionInfo"></param>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator.Migrate">
-            <summary>
-            Updates the database to reflect the current EntityFramework Schema
             </summary>
         </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper">
@@ -305,11 +279,6 @@
             Saves the changes on the underlying context
             </summary>
             <returns>A task for the Async</returns>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.BeginWrite">
-            <summary>
-            Moves the existing context to the graveyard so that changes cant be saved on it
-            </summary>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.DbContext">
             <summary>
@@ -348,11 +317,6 @@
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.Dispose">
             <summary>
             Requests that the underlying context be disposed
-            </summary>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.BeginWrite">
-            <summary>
-            Detatches all existing items from the context
             </summary>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.DbContext">
