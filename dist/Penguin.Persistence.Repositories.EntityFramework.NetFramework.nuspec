@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Penguin.Persistence.Repositories.EntityFramework.NetFramework</id>
-    <version>3.0.5</version>
+    <version>3.0.6</version>
     <authors>MrJackSpade</authors>
     <owners>MrJackSpade</owners>
     <projectUrl>http://www.penguinms.com/Nuget</projectUrl>
@@ -19,14 +19,15 @@
 	  <dependency id="Penguin.Debugging" version="2.0.1" />
 	  <dependency id="Penguin.Extensions.String" version="3.0.0" />
 	  <dependency id="Penguin.Extensions.Exceptions" version="2.0.0" />
-	  <dependency id="Penguin.Persistence.Abstractions" version="2.0.1" />
+	  <dependency id="Penguin.Persistence.Abstractions" version="2.0.7" />
 	  <dependency id="Penguin.Reflection" version="4.0.0" />
 	  <dependency id="Penguin.Reflection.Abstractions" version="3.0.0" />
 	  <dependency id="Penguin.Reflection.Extensions" version="3.0.2" />
-	  <dependency id="Penguin.Messaging.Abstractions" version="2.1.0" />
-	  <dependency id="Penguin.Messaging.Core" version="3.1.0" />
+	  <dependency id="Penguin.Messaging.Abstractions" version="2.1.2" />
+	  <dependency id="Penguin.Messaging.Persistence" version="2.2.4" />
+	  <dependency id="Penguin.Messaging.Core" version="3.1.1" />
 	  <dependency id="Penguin.Messaging.Logging" version="3.0.0" />
-	  <dependency id="Penguin.Persistence.EntityFramework.NetFramework" version="2.0.0" />
+	  <dependency id="Penguin.Persistence.EntityFramework.NetFramework" version="2.0.1" />
 	  <dependency id="System.ServiceModel.Primitives" version="4.5.3" />
     </dependencies>
   </metadata>
