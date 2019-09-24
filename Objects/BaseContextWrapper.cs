@@ -57,7 +57,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <summary>
         /// Preps the DbContext for a new write context
         /// </summary>
-        public abstract void BeginWrite();
+        public abstract void BeginWrite(bool NewWrite);
 
         /// <summary>
         /// The current DbContext instance being referenced

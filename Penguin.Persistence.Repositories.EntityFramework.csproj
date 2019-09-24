@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net48;netstandard2.0</TargetFrameworks>
     <PackageProjectUrl>https://github.com/penguincms/Penguin.Persistence.Repositories.EntityFramework</PackageProjectUrl>
-    <Version>4.0.3</Version>
+    <Version>4.0.4</Version>
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
     <RootNamespace>Penguin.Persistence.Repositories.EntityFramework</RootNamespace>
   </PropertyGroup>

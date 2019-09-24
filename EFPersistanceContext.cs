@@ -75,7 +75,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <summary>
         /// If true, this context has a valid open WriteContext
         /// </summary>
-        public virtual bool WriteEnabled { get; set; }
+        public virtual bool WriteEnabled => this.GetWriteContexts().Any();
 
         /// <summary>
         /// Creates a new instance of this persistence context
@@ -162,6 +162,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="context">The write context to open this persistence context with</param>
         public override void BeginWrite(IWriteContext context)
         {
+            DbContext.BeginWrite(!WriteEnabled);
+
             if (!OpenWriteContexts.ContainsKey(this.DbContext))
             {
                 OpenWriteContexts.TryAdd(DbContext, new SynchronizedCollection<IWriteContext>());
@@ -171,10 +173,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 StaticLogger.Log($"{Id}: Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
             }
-
-            DbContext.BeginWrite();
-
-            this.WriteEnabled = true;
 
             if (!OpenWriteContexts[this.DbContext].Contains(context))
             {
@@ -194,8 +192,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             DbContext.Dispose();
 
-            this.WriteEnabled = false;
-
             OpenWriteContexts.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
         }
 
@@ -208,8 +204,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             //We only actually want to call commit if this is the ONLY open context (Top Level in nested call)
             if (this.GetWriteContexts().Length == 1 && this.GetWriteContexts().Single() == writeContext)
             {
-                if (this.WriteEnabled)
-                {
+
                     if (StaticLogger.IsListening)
                     {
                         StaticLogger.Log($"{Id}: Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
@@ -229,15 +224,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                         throw;
                     }
-                }
-                else
-                {
-                    if (StaticLogger.IsListening)
-                    {
-                        StaticLogger.Log($"{Id}: Write not enabled. Can not save changes", StaticLogger.LoggingLevel.Final);
-                    }
-                    throw new UnauthorizedAccessException(NotEnableMessage);
-                }
+
             }
         }
 
@@ -346,8 +333,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             //We only actually want to call commit if this is the ONLY open context (Top Level in nested call)
             if (this.GetWriteContexts().Length == 1 && this.GetWriteContexts().Single() == writeContext)
             {
-                if (this.WriteEnabled)
-                {
+
                     if (StaticLogger.IsListening)
                     {
                         StaticLogger.Log($"{Id}: Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
@@ -355,11 +341,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
                     await this.DbContext.SaveChangesAsync().ConfigureAwait(false);
                     PostCommitMessages(postSaveEvents);
-                }
-                else
-                {
-                    throw new UnauthorizedAccessException(NotEnableMessage);
-                }
+
             }
         }
 
@@ -425,8 +407,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             if (OpenWriteContexts[this.DbContext].Count == 0)
             {
                 DbContext.Dispose();
-
-                this.WriteEnabled = false;
 
                 OpenWriteContexts.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
             }
@@ -641,7 +621,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
         private string Id { get; set; } = $"{Guid.NewGuid()} <{typeof(T).FullName}>";
         private WriteContextBag OpenWriteContexts { get; set; } = new WriteContextBag();
-        private const string NotEnableMessage = "This context has not been enabled for writing";
 
         private static DbQuery<T> GenerateBaseQuery(DbSet<T> Set) => GenerateBaseQuery<T>(Set);
 
@@ -698,7 +677,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             get
             {
-                return OpenWriteContexts[context];
+                return OpenWriteContexts.TryGetValue(context, out SynchronizedCollection<IWriteContext> contexts) ? contexts : new SynchronizedCollection<IWriteContext>();
             }
         }
 

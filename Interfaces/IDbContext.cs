@@ -14,7 +14,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfac
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         System.Data.Entity.Infrastructure.DbChangeTracker ChangeTracker { get; }
 
-        void BeginWrite();
+        void BeginWrite(bool NewWrite);
 
         DbSet<T> Set<T>() where T : class;
 

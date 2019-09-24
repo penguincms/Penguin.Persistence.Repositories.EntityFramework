@@ -71,9 +71,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <summary>
         /// Moves the existing context to the graveyard so that changes cant be saved on it
         /// </summary>
-        public override void BeginWrite()
+        /// <param name="newWrite">True if the context has not already been opened</param>
+        public override void BeginWrite(bool newWrite)
         {
-            Dispose();
+            //Only dispose of any existing context if we're not already open
+            if (newWrite)
+            {
+                Dispose();
+            }
         }
 
         /// <summary>

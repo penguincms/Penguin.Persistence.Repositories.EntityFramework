@@ -247,7 +247,7 @@
             Forwarded to current instance
             </summary>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.BeginWrite">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.BeginWrite(System.Boolean)">
             <summary>
             Preps the DbContext for a new write context
             </summary>
@@ -306,10 +306,11 @@
             </summary>
             <returns>A task for the Async</returns>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.BeginWrite">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.BeginWrite(System.Boolean)">
             <summary>
             Moves the existing context to the graveyard so that changes cant be saved on it
             </summary>
+            <param name="newWrite">True if the context has not already been opened</param>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.DbContext">
             <summary>
@@ -350,10 +351,11 @@
             Requests that the underlying context be disposed
             </summary>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.BeginWrite">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.BeginWrite(System.Boolean)">
             <summary>
             Detatches all existing items from the context
             </summary>
+            <param name="newWrite">True if the context has not already been opened</param>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext.DbContext">
             <summary>

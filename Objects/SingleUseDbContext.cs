@@ -75,14 +75,19 @@ namespace Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects
         /// <summary>
         /// Detatches all existing items from the context
         /// </summary>
-        public override void BeginWrite()
+        /// <param name="newWrite">True if the context has not already been opened</param>
+        public override void BeginWrite(bool newWrite)
         {
-            foreach (DbEntityEntry dbEntityEntry in this.DbContext.ChangeTracker.Entries())
+            //Only detatch if we dont already have a context open
+            if (newWrite)
             {
-
-                if (dbEntityEntry.Entity != null)
+                foreach (DbEntityEntry dbEntityEntry in this.DbContext.ChangeTracker.Entries())
                 {
-                    dbEntityEntry.State = EntityState.Detached;
+
+                    if (dbEntityEntry.Entity != null)
+                    {
+                        dbEntityEntry.State = EntityState.Detached;
+                    }
                 }
             }
         }
