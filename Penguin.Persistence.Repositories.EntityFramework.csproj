@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="Penguin.Projects.Shared\Penguin.Projects.Shared.csproj" />
   <PropertyGroup>
-    <PackageProjectUrl>https://github.com/penguincms/Penguin.Persistence.Repositories.EntityFramework.NetFramework</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/penguincms/Penguin.Persistence.Repositories.EntityFramework</PackageProjectUrl>
     <Version>4.0.0</Version>
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
     <RootNamespace>Penguin.Persistence.Repositories.EntityFramework</RootNamespace>
