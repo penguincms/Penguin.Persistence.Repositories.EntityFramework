@@ -31,14 +31,19 @@
             If true, this context has access to a valid DbSet T  on the underlying provider
             </summary>
         </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.PrimaryDataSource">
-            <summary>
-            Returns an IQueriable that accesses the current DbSet
-            </summary>
-        </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.WriteEnabled">
             <summary>
             If true, this context has a valid open WriteContext
+            </summary>
+        </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.MessageBus">
+            <summary>
+            The optionally provided message bus for sending persistence messages over
+            </summary>
+        </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.PrimaryDataSource">
+            <summary>
+            Returns an IQueriable that accesses the current DbSet
             </summary>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.#ctor(Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces.IDbContext,Penguin.Messaging.Core.MessageBus)">
@@ -48,23 +53,23 @@
             <param name="dbContext">The underlying DbContext to use as the data source</param>
             <param name="messageBus">An optional message bus for publishing persistence events</param>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Add(`0[])">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Add(`0)">
             <summary>
             Adds a range of objects to the underlying context
             </summary>
             <param name="o">The objects to add</param>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Add(System.Object[])">
-            <summary>
-            Adds a range of objects to the underlying context
-            </summary>
-            <param name="o">The objects to add</param>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.AddOrUpdate(`0[])">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.AddOrUpdate(`0)">
             <summary>
             Adds or updates a range of objects to the underlying context
             </summary>
             <param name="o">The objects to add or update</param>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.AddRange(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Calls AddRange on the underlying context
+            </summary>
+            <param name="o">The objects to add</param>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.BeginWrite(Penguin.Persistence.Abstractions.Interfaces.IWriteContext)">
             <summary>
@@ -89,30 +94,17 @@
             </summary>
             <param name="writeContext">Any valid open write context</param>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Delete(`0[])">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Delete(`0)">
             <summary>
-            Deletes a collection of entities from the underlying context. If auditableEntities, simply sets the date deleted
+            Deletes an of entities from the underlying context. If auditableEntities, simply sets the date deleted
             </summary>
-            <param name="o">the objects to delete</param>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Delete(System.Object[])">
-            <summary>
-            Deletes a collection of entities from the underlying context. If auditableEntities, simply sets the date deleted
-            </summary>
-            <param name="o">the objects to delete</param>
+            <param name="o">the object to delete</param>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.EndWrite(Penguin.Persistence.Abstractions.Interfaces.IWriteContext)">
             <summary>
             Closes the provided writecontext, and persists changes if it was the last open context (then detaches entities)
             </summary>
             <param name="context"></param>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Find(System.Object[])">
-            <summary>
-            Gets an array of objects by their primary keys
-            </summary>
-            <param name="Keys">The keys to search for</param>
-            <returns>The array of objects with matching keys</returns>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Find(System.Object)">
             <summary>
@@ -134,13 +126,7 @@
             <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
             <returns>A subset including only the derived type from the underlying persistence context</returns>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Update(`0[])">
-            <summary>
-            Updates a list of objects on the underlying DbContext
-            </summary>
-            <param name="o">The object list to update</param>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Update(System.Object[])">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Update(`0)">
             <summary>
             Updates a list of objects on the underlying DbContext
             </summary>
@@ -151,11 +137,6 @@
             Generates a new WriteContext capable of opening this PersistenceContext
             </summary>
             <returns>A new WriteContext capable of opening this PersistenceContext</returns>
-        </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.MessageBus">
-            <summary>
-            The optionally provided message bus for sending persistence messages over
-            </summary>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.IncludeStrings(System.Type,System.String,System.Boolean)">
             <summary>
