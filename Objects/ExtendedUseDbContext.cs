@@ -1,4 +1,5 @@
 ﻿using Penguin.DependencyInjection.Abstractions.Attributes;
+using Penguin.DependencyInjection.Abstractions.Enums;
 using Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces;
 using System;
 using System.Collections.ObjectModel;
@@ -11,7 +12,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
     /// A container that generates a new dynamic context each time the previous one is closed without disposing of the originals
     /// To maintain lazyloading
     /// </summary>
-    [Register(Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped, typeof(IDbContext))]
+    [Register(ServiceLifetime.Scoped, typeof(IDbContext))]
     public class ExtendedUseDbContextWrapper : BaseContextWrapper
     {
         /// <summary>

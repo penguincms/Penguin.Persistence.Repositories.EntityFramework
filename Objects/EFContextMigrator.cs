@@ -1,21 +1,20 @@
 ﻿using Penguin.DependencyInjection.Abstractions.Attributes;
+using Penguin.DependencyInjection.Abstractions.Enums;
 using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Interfaces;
 using Penguin.Reflection;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 {
     /// <summary>
     /// A class designed to initialize and update the database schema
     /// </summary>
-    [Register(Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient, typeof(IPersistenceContextMigrator))]
+    [Register(ServiceLifetime.Transient, typeof(IPersistenceContextMigrator))]
     public class EFContextMigrator : IPersistenceContextMigrator
     {
         PersistenceConnectionInfo PersistenceConnectionInfo { get; set; }

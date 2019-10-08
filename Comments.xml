@@ -303,6 +303,11 @@
             Contains the "Disposed" contexts
             </summary>
         </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.Guid">
+            <summary>
+            Generated at construction to track context resolution
+            </summary>
+        </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.SingleUseDbContext">
             <summary>
             Wraps a DbContext so that it is disposed of when the WriteContext closes
