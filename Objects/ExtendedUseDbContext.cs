@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Penguin.DependencyInjection.Abstractions.Attributes;
+using Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces;
+using System;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
     /// A container that generates a new dynamic context each time the previous one is closed without disposing of the originals
     /// To maintain lazyloading
     /// </summary>
+    [Register(Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped, typeof(IDbContext))]
     public class ExtendedUseDbContextWrapper : BaseContextWrapper
     {
         /// <summary>
@@ -104,5 +107,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 
         private DbContext CurrentContext { get; set; }
         private IServiceProvider ServiceProvider { get; set; }
+
+        /// <summary>
+        /// Generated at construction to track context resolution
+        /// </summary>
+        public Guid Guid { get; set; } = Guid.NewGuid();
     }
 }
