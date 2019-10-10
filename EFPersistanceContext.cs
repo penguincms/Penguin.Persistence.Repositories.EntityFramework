@@ -284,6 +284,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             T toReturn = this.DbContext.Set<T>().Find(Key);
 
+            if (toReturn is null)
+            {
+                return null;
+            }
+
             List<string> includes = IncludeStrings(typeof(T)).OrderBy(s => s.Split('.').Length - 1).Select(s => $"Root.{s}").ToList();
 
             Dictionary<string, List<object>> navigationProperties = new Dictionary<string, List<object>>(includes.Count);
@@ -581,7 +586,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     {
                         thisEvent.NewValues.Add(propertyName, nextEntry.Property(propertyName).CurrentValue);
                         thisEvent.OldValues.Add(propertyName, nextEntry.Property(propertyName).OriginalValue);
-                    } else if (nextEntry.State == EntityState.Added)
+                    }
+                    else if (nextEntry.State == EntityState.Added)
                     {
                         thisEvent.NewValues.Add(propertyName, nextEntry.Property(propertyName).CurrentValue);
                         thisEvent.OldValues.Add(propertyName, null);
