@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="Penguin.Projects.Shared\Penguin.Projects.Shared.csproj" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net48;netstandard2.0</TargetFrameworks>
@@ -7,7 +7,6 @@
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
     <RootNamespace>Penguin.Persistence.Repositories.EntityFramework</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="dist\**" />
     <Compile Remove="lib\**" />
@@ -18,8 +17,8 @@
     <None Remove="dist\**" />
     <None Remove="lib\**" />
     <None Remove="packages\**" />
+    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.0-63707652289" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove=".gitignore" />
     <None Remove="LocalPublish.bat" />
@@ -32,18 +31,9 @@
     <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.1.1.2.nupkg" />
     <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.nuspec" />
   </ItemGroup>
-
- <ItemGroup>
-   <PackageReference Include="Penguin.Debugging" Version="2.0.1" />
-   <PackageReference Include="Penguin.DependencyInjection.Abstractions" Version="2.1.5" />
-   <PackageReference Include="Penguin.Extensions.String" Version="3.0.2" />
-   <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.0" />
-   <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.4" />
-   <PackageReference Include="Penguin.Persistence.Abstractions" Version="3.0.0" />
-   <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.1" />
-   <PackageReference Include="Penguin.Reflection" Version="4.0.8" />
-   <PackageReference Include="Penguin.Reflection.Extensions" Version="3.0.4" />
-   <PackageReference Include="System.ServiceModel.Primitives" Version="4.6.0" />
- </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.4" />
+    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.1" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.6.0" />
+  </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Penguin.Persistence.Repositories.EntityFramework.Local</name>
+        <name>Penguin.Persistence.Repositories.EntityFramework</name>
     </assembly>
     <members>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.DisposableContext`1">
