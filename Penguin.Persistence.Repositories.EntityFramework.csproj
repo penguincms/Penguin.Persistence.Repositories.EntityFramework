@@ -17,9 +17,9 @@
     <None Remove="dist\**" />
     <None Remove="lib\**" />
     <None Remove="packages\**" />
-    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.0-T9LXGUJ" />
-    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.4-T9LXGUJ" />
-    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.1-T9LXGUJ" />
+    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.1-T9M1HHH" />
+    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.5-T9M1HHH" />
+    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9M1HHH" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
