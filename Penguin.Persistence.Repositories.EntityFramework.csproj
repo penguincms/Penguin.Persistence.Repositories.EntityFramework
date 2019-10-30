@@ -20,8 +20,8 @@
     <None Remove="packages\**" />
     <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.1-T9M3AAF" />
     <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.5-T9M3AAF" />
-    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9M3AAF" />
     <PackageReference Include="Penguin.Extensions.Collections" Version="2.0.4-T9M3AAF" />
+    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9M4A3K" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".gitignore" />

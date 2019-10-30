@@ -3304,6 +3304,7 @@
       "..\\Penguin.Debugging\\Penguin.Debugging.Local.csproj",
       "..\\Penguin.DependencyInjection.Abstractions\\Penguin.DependencyInjection.Abstractions.Local.csproj",
       "..\\Penguin.Entities.Abstractions\\Penguin.Entities.Abstractions.Local.csproj",
+      "..\\Penguin.Extensions.Collections\\Penguin.Extensions.Collections.Local.csproj",
       "..\\Penguin.Extensions.Exceptions\\Penguin.Extensions.Exceptions.Local.csproj",
       "..\\Penguin.Extensions.String\\Penguin.Extensions.String.Local.csproj",
       "..\\Penguin.Messaging.Abstractions\\Penguin.Messaging.Abstractions.Local.csproj",
