@@ -6,6 +6,7 @@
     <Version>4.2.4</Version>
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
     <RootNamespace>Penguin.Persistence.Repositories.EntityFramework</RootNamespace>
+    <AssemblyName>Penguin.Persistence.Repositories.EntityFramework</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="dist\**" />
@@ -17,9 +18,9 @@
     <None Remove="dist\**" />
     <None Remove="lib\**" />
     <None Remove="packages\**" />
-    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.1-T9M1HHH" />
-    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.5-T9M1HHH" />
-    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9M1HHH" />
+    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.1-T9M2XAX" />
+    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.5-T9M2XAX" />
+    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9M2XAX" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
@@ -35,5 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.6.0" />
+	<PackageReference Include="Penguin.Extensions.Collections" Version="4.2.4" />
   </ItemGroup>
 </Project>

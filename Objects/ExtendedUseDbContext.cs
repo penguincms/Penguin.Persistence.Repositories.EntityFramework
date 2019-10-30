@@ -16,9 +16,39 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
     public class ExtendedUseDbContextWrapper : BaseContextWrapper
     {
         /// <summary>
+        /// Generated at construction to track context resolution
+        /// </summary>
+        public Guid Guid { get; set; } = Guid.NewGuid();
+
+        /// <summary>
         /// Always returns false since there is always a context
         /// </summary>
         public override bool IsDisposed => false;
+
+        /// <summary>
+        /// Accesses the current DbContext or creates a new one
+        /// </summary>
+        protected override DbContext DbContext
+        {
+            get
+            {
+                if (CurrentContext is null)
+                {
+                    CurrentContext = ServiceProvider.GetService(typeof(DbContext)) as DbContext;
+                }
+
+                return CurrentContext;
+            }
+        }
+
+        /// <summary>
+        /// Contains the "Disposed" contexts
+        /// </summary>
+        protected Collection<DbContext> GraveYard { get; }
+
+        private DbContext CurrentContext { get; set; }
+
+        private IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
         /// Populates the internal service provider so the Extended Use context knows where to request new contexts from
@@ -28,6 +58,19 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         {
             GraveYard = new Collection<DbContext>();
             ServiceProvider = serviceProvider;
+        }
+
+        /// <summary>
+        /// Moves the existing context to the graveyard so that changes cant be saved on it
+        /// </summary>
+        /// <param name="newWrite">True if the context has not already been opened</param>
+        public override void BeginWrite(bool newWrite)
+        {
+            //Only dispose of any existing context if we're not already open
+            if (newWrite)
+            {
+                Dispose();
+            }
         }
 
         /// <summary>
@@ -71,47 +114,5 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
                 throw;
             }
         }
-
-        /// <summary>
-        /// Moves the existing context to the graveyard so that changes cant be saved on it
-        /// </summary>
-        /// <param name="newWrite">True if the context has not already been opened</param>
-        public override void BeginWrite(bool newWrite)
-        {
-            //Only dispose of any existing context if we're not already open
-            if (newWrite)
-            {
-                Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Accesses the current DbContext or creates a new one
-        /// </summary>
-        protected override DbContext DbContext
-        {
-            get
-            {
-                if (CurrentContext is null)
-                {
-                    CurrentContext = ServiceProvider.GetService(typeof(DbContext)) as DbContext;
-                }
-
-                return CurrentContext;
-            }
-        }
-
-        /// <summary>
-        /// Contains the "Disposed" contexts
-        /// </summary>
-        protected Collection<DbContext> GraveYard { get; }
-
-        private DbContext CurrentContext { get; set; }
-        private IServiceProvider ServiceProvider { get; set; }
-
-        /// <summary>
-        /// Generated at construction to track context resolution
-        /// </summary>
-        public Guid Guid { get; set; } = Guid.NewGuid();
     }
 }

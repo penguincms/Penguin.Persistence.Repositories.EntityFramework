@@ -489,14 +489,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "I dont know of any other way to get the value but to test for an error")]
         private static bool IsValidType(IDbContext holder, Type toCheck)
         {
-            try
-            {
-                return holder.Set(toCheck) != null;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            //try
+            //{
+            return holder.Set(toCheck) != null;
+            //}
+            //catch (Exception)
+            //{
+            //    return false;
+            //}
         }
 
         private bool CheckAndUpdate(T o)
