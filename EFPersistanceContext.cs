@@ -21,6 +21,7 @@ using System.Data.Entity.Infrastructure;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
@@ -198,19 +199,35 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     StaticLogger.Log($"{Id}: Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                 }
 
-                try
+                int retryCount = 0;
+                Exception lastException;
+                bool retry = false;
+
+                Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
+
+                do
                 {
-                    Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
-                    this.DbContext.SaveChanges();
-                    PostCommitMessages(postSaveEvents);
-                }
-                catch (Exception)
+                    lastException = null;
+
+                    try
+                    {
+                        this.DbContext.SaveChanges();
+                        PostCommitMessages(postSaveEvents);
+                    }
+                    catch (Exception ex)
+                    {
+                        lastException = ex;
+                        Task.Delay(100).Wait();
+                    }
+                } while (retry && retryCount++ < 5 && lastException != null);
+
+                if (lastException != null)
                 {
                     this.OpenWriteContexts.Clear(this.DbContext);
 
                     this.DbContext.Dispose();
 
-                    throw;
+                    ExceptionDispatchInfo.Capture(lastException).Throw();
                 }
             }
         }
