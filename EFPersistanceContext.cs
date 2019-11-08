@@ -1,6 +1,4 @@
-﻿using Penguin.Cms.Entities;
-using Penguin.Debugging;
-using Penguin.Entities;
+﻿using Penguin.Debugging;
 using Penguin.Extensions.Strings;
 using Penguin.Messaging.Core;
 using Penguin.Messaging.Persistence.Messages;
@@ -111,8 +109,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="o">The objects to add</param>
         public override void Add(T o)
         {
-            UpdateTimestamps(o);
-
             DbSet<T> set = this.DbContext.Set<T>();
 
             set.Add(o);
@@ -128,7 +124,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 throw new ArgumentNullException(nameof(o), "Can not add or update null object");
             }
-            UpdateTimestamps(o);
 
             if (!CheckAndUpdate(o))
             {
@@ -257,18 +252,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="o">the object to delete</param>
         public override void Delete(T o)
         {
-            DbSet<T> set = this.DbContext.Set<T>();
-
-            UpdateTimestamps(o);
-
-            if (o is AuditableEntity a)
-            {
-                a.DateDeleted = a.DateDeleted ?? DateTime.Now;
-            }
-            else
-            {
-                set.Remove(o);
-            }
+            this.DbContext.Set<T>().Remove(o);
         }
 
         /// <summary>
@@ -472,21 +456,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return ToReturn;
         }
 
-        /// <summary>
-        /// If the object is an AuditableEntity, this updates the timestamps during saves
-        /// </summary>
-        /// <param name="o">The objects to update</param>
-        protected void UpdateTimestamps(params object[] o)
-        {
-            foreach (object i in o)
-            {
-                if (i is AuditableEntity a)
-                {
-                    a.DateModified = DateTime.Now;
-                }
-            }
-        }
-
         private static DbQuery<T> GenerateBaseQuery(DbSet<T> Set) => GenerateBaseQuery<T>(Set);
 
         private static DbQuery<TDerived> GenerateBaseQuery<TDerived>(DbSet<TDerived> Set) where TDerived : T
@@ -597,7 +566,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                 PostSaveEvents.Enqueue(thisEvent);
 
-                foreach (string propertyName in nextEntry.CurrentValues.PropertyNames)
+                IEnumerable<string> propertySource = nextEntry.State == EntityState.Deleted ? nextEntry.OriginalValues.PropertyNames : nextEntry.CurrentValues.PropertyNames;
+
+                foreach (string propertyName in propertySource)
                 {
                     if (nextEntry.Property(propertyName).IsModified)
                     {
@@ -608,6 +579,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     {
                         thisEvent.NewValues.Add(propertyName, nextEntry.Property(propertyName).CurrentValue);
                         thisEvent.OldValues.Add(propertyName, null);
+                    } else if(nextEntry.State == EntityState.Deleted)
+                    {
+                        thisEvent.NewValues.Add(propertyName, null);
+                        thisEvent.OldValues.Add(propertyName, nextEntry.Property(propertyName).OriginalValue);
                     }
                 }
 

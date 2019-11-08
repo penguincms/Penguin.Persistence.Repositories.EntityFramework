@@ -6,7 +6,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Reflection;
 
-namespace Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects
+namespace Penguin.Persistence.Repositories.EntityFramework
 {
     /// <summary>
     /// Wraps a DbContext so that it is disposed of when the WriteContext closes

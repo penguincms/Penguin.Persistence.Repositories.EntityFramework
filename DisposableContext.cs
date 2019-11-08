@@ -1,5 +1,5 @@
 ﻿using Penguin.Persistence.Abstractions;
-using Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects;
+using Penguin.Persistence.Repositories.EntityFramework;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
 {
