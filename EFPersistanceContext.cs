@@ -300,7 +300,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             foreach (string include in includes)
             {
-                List<object> objects = navigationProperties[include.ToLast('.')];
+                if (!navigationProperties.TryGetValue(include.ToLast('.'), out List<object> objects))
+                {
+                    StaticLogger.Log($"EFPersistenceContext: {include.ToLast('.')} was not found in the objects dictionary when attempting to lazy load");
+                    continue;
+                }
 
                 foreach (object o in objects)
                 {
