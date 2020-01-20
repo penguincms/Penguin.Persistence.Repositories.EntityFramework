@@ -18,10 +18,10 @@
     <None Remove="dist\**" />
     <None Remove="lib\**" />
     <None Remove="packages\**" />
-    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.1-T9MJL4F" />
-    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.5-T9MJL4F" />
-    <PackageReference Include="Penguin.Extensions.Collections" Version="2.0.4-T9MJL4F" />
-    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9NRS3A" />
+    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.1-T9QC72V" />
+    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.5-T9QC72V" />
+    <PackageReference Include="Penguin.Extensions.Collections" Version="2.0.4-T9QC72V" />
+    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9QC72V" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
@@ -36,6 +36,6 @@
     <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.6.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
   </ItemGroup>
 </Project>
