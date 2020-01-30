@@ -7,6 +7,7 @@
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
     <RootNamespace>Penguin.Persistence.Repositories.EntityFramework</RootNamespace>
     <AssemblyName>Penguin.Persistence.Repositories.EntityFramework</AssemblyName>
+    <DocumentationFile>Penguin.Persistence.Repositories.EntityFramework.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="dist\**" />
