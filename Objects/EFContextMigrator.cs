@@ -1,5 +1,6 @@
 ﻿using Penguin.DependencyInjection.Abstractions.Attributes;
 using Penguin.DependencyInjection.Abstractions.Enums;
+using Penguin.Extensions.Collections;
 using Penguin.Extensions.Strings;
 using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Interfaces;
@@ -11,7 +12,6 @@ using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Penguin.Extensions.Collections;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 {

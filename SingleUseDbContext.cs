@@ -40,6 +40,21 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         /// <summary>
+        /// The backing DbContext
+        /// </summary>
+        protected override DbContext DbContext
+        {
+            get
+            {
+                return CurrentContext;
+            }
+        }
+
+        private DbContext CurrentContext { get; set; }
+
+        private bool PreventDispose { get; set; }
+
+        /// <summary>
         /// Constructs a new instance of this wrapping class
         /// </summary>
         /// <param name="connectionInfo">The connection info to use with the DynamicContext</param>
@@ -62,17 +77,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         /// <summary>
-        /// Requests that the underlying context be disposed
-        /// </summary>
-        public override void Dispose()
-        {
-            if (!PreventDispose)
-            {
-                DbContext.Dispose();
-            }
-        }
-
-        /// <summary>
         /// Detatches all existing items from the context
         /// </summary>
         /// <param name="newWrite">True if the context has not already been opened</param>
@@ -83,7 +87,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 foreach (DbEntityEntry dbEntityEntry in this.DbContext.ChangeTracker.Entries())
                 {
-
                     if (dbEntityEntry.Entity != null)
                     {
                         dbEntityEntry.State = EntityState.Detached;
@@ -93,18 +96,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         /// <summary>
-        /// The backing DbContext
+        /// Requests that the underlying context be disposed
         /// </summary>
-        protected override DbContext DbContext
+        public override void Dispose()
         {
-            get
+            if (!PreventDispose)
             {
-                return CurrentContext;
+                DbContext.Dispose();
             }
         }
-
-        private DbContext CurrentContext { get; set; }
-
-        private bool PreventDispose { get; set; }
     }
 }

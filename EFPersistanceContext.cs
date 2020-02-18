@@ -583,7 +583,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     {
                         thisEvent.NewValues.Add(propertyName, nextEntry.Property(propertyName).CurrentValue);
                         thisEvent.OldValues.Add(propertyName, null);
-                    } else if(nextEntry.State == EntityState.Deleted)
+                    }
+                    else if (nextEntry.State == EntityState.Deleted)
                     {
                         thisEvent.NewValues.Add(propertyName, null);
                         thisEvent.OldValues.Add(propertyName, nextEntry.Property(propertyName).OriginalValue);

@@ -22,6 +22,16 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         public abstract bool IsDisposed { get; }
 
         /// <summary>
+        /// The current DbContext instance being referenced
+        /// </summary>
+        protected abstract DbContext DbContext { get; }
+
+        /// <summary>
+        /// Preps the DbContext for a new write context
+        /// </summary>
+        public abstract void BeginWrite(bool NewWrite);
+
+        /// <summary>
         /// Handles the disposal logic for the current instance
         /// </summary>
         public abstract void Dispose();
@@ -52,16 +62,5 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// Forwarded to current instance
         /// </summary>
         public DbSet Set(Type toCheck) => DbContext.Set(toCheck);
-
-
-        /// <summary>
-        /// Preps the DbContext for a new write context
-        /// </summary>
-        public abstract void BeginWrite(bool NewWrite);
-
-        /// <summary>
-        /// The current DbContext instance being referenced
-        /// </summary>
-        protected abstract DbContext DbContext { get; }
     }
 }

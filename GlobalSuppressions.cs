@@ -9,4 +9,3 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "<Pending>", Scope = "member", Target = "~M:Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces.IDbContext.Set(System.Type)~System.Data.Entity.DbSet")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "<Pending>", Scope = "type", Target = "~T:Penguin.Persistence.Repositories.EntityFramework.NetStandard.Objects.CurrentSetWrapper`1")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>", Scope = "member", Target = "~P:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.isValid")]
-
