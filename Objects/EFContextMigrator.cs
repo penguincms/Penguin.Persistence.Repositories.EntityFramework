@@ -12,6 +12,10 @@ using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Penguin.Extensions.Collections;
+using System.Data.Entity.Migrations.Infrastructure;
+using System.Reflection;
+using System.Data.Entity.Migrations.Model;
+using Penguin.Reflection.Extensions;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 {
@@ -79,7 +83,39 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 
                         DbMigrator migrator = new DbMigrator(configuration);
 
-                        migrator.Update();
+                        try
+                        {
+                            migrator.Update();
+                        } catch (AutomaticDataLossException ex)
+                        {
+
+                            throw;
+
+                            //Come back to this to find data changes
+
+
+                            //object _modelDiffer = typeof(DbMigrator).GetProperty("_modelDiffer", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                            //ICollection<MigrationOperation> operations;
+
+                            //object[] Parameters = new object[] { };
+
+                            //_modelDiffer.Invoke("Diff", BindingFlags.NonPublic | BindingFlags.Instance, Parameters);
+
+                            //MethodInfo Diff
+                            //var operations
+                            //   = _modelDiffer
+                            //       .Diff(
+                            //           sourceModel.Model,
+                            //           targetModel.Model,
+                            //           targetModel.Model == _currentModel
+                            //               ? _modificationCommandTreeGenerator
+                            //               : null,
+                            //           SqlGenerator,
+                            //           sourceModel.Version,
+                            //           targetModel.Version)
+                            //       .ToList();
+                        }
                     }
                 }
             }
