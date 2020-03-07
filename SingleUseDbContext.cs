@@ -40,14 +40,23 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         /// <summary>
+        /// The backing DbContext
+        /// </summary>
+        protected override DbContext DbContext => this.CurrentContext;
+
+        private DbContext CurrentContext { get; set; }
+
+        private bool PreventDispose { get; set; }
+
+        /// <summary>
         /// Constructs a new instance of this wrapping class
         /// </summary>
         /// <param name="connectionInfo">The connection info to use with the DynamicContext</param>
         /// <param name="preventDispose">Prevents the underlying context from being dispose when Dispose() is called (in case there are lazy loaded entities)</param>
         public SingleUseDbContext(PersistenceConnectionInfo connectionInfo, bool preventDispose = false)
         {
-            CurrentContext = new DynamicContext(connectionInfo);
-            PreventDispose = preventDispose;
+            this.CurrentContext = new DynamicContext(connectionInfo);
+            this.PreventDispose = preventDispose;
         }
 
         /// <summary>
@@ -57,19 +66,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="preventDispose">Prevents the underlying context from being dispose when Dispose() is called (in case there are lazy loaded entities)</param>
         public SingleUseDbContext(string connectionString, bool preventDispose = false)
         {
-            CurrentContext = new DynamicContext(new PersistenceConnectionInfo(connectionString));
-            PreventDispose = preventDispose;
-        }
-
-        /// <summary>
-        /// Requests that the underlying context be disposed
-        /// </summary>
-        public override void Dispose()
-        {
-            if (!PreventDispose)
-            {
-                DbContext.Dispose();
-            }
+            this.CurrentContext = new DynamicContext(new PersistenceConnectionInfo(connectionString));
+            this.PreventDispose = preventDispose;
         }
 
         /// <summary>
@@ -83,7 +81,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 foreach (DbEntityEntry dbEntityEntry in this.DbContext.ChangeTracker.Entries())
                 {
-
                     if (dbEntityEntry.Entity != null)
                     {
                         dbEntityEntry.State = EntityState.Detached;
@@ -93,18 +90,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         /// <summary>
-        /// The backing DbContext
+        /// Requests that the underlying context be disposed
         /// </summary>
-        protected override DbContext DbContext
+        public override void Dispose()
         {
-            get
+            if (!this.PreventDispose)
             {
-                return CurrentContext;
+                this.DbContext.Dispose();
             }
         }
-
-        private DbContext CurrentContext { get; set; }
-
-        private bool PreventDispose { get; set; }
     }
 }

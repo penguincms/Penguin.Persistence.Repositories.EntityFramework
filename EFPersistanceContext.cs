@@ -42,12 +42,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             get
             {
-                if (!isValid.HasValue)
+                if (!this.isValid.HasValue)
                 {
-                    isValid = IsValidType(this.DbContext, typeof(T));
+                    this.isValid = IsValidType(this.DbContext, typeof(T));
                 }
 
-                return isValid.Value;
+                return this.isValid.Value;
             }
         }
 
@@ -66,10 +66,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         protected override IQueryable<T> PrimaryDataSource
         {
-            get
-            {
-                return IsValid ? (GenerateBaseQuery(DbContext.Set<T>())) : new List<T>() as IQueryable<T>;
-            }
+            get => this.IsValid ? (GenerateBaseQuery(this.DbContext.Set<T>())) : new List<T>() as IQueryable<T>;
             set
             {
             }
@@ -89,17 +86,17 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             Contract.Requires(dbContext != null);
 
-            MessageBus = messageBus;
+            this.MessageBus = messageBus;
             if (StaticLogger.IsListening)
             {
-                Penguin.Debugging.StaticLogger.Log($"{Id}: Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
+                Penguin.Debugging.StaticLogger.Log($"{this.Id}: Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
             }
 
             this.DbContext = dbContext;
 
             if (!IsValidType(dbContext, typeof(T)))
             {
-                throw new ArgumentException($"Can not create {nameof(EFPersistenceContext<T>)}. {typeof(T).FullName} was not found on the {nameof(DbContext)}");
+                throw new ArgumentException($"Can not create {nameof(EFPersistenceContext<T>)}. {typeof(T).FullName} was not found on the {nameof(this.DbContext)}");
             }
         }
 
@@ -125,7 +122,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 throw new ArgumentNullException(nameof(o), "Can not add or update null object");
             }
 
-            if (!CheckAndUpdate(o))
+            if (!this.CheckAndUpdate(o))
             {
                 DbSet<T> set = this.DbContext.Set<T>();
                 set.Add(o);
@@ -147,21 +144,21 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="context">The write context to open this persistence context with</param>
         public override void BeginWrite(IWriteContext context)
         {
-            DbContext.BeginWrite(!WriteEnabled);
+            this.DbContext.BeginWrite(!this.WriteEnabled);
 
-            if (!OpenWriteContexts.ContainsKey(this.DbContext))
+            if (!this.OpenWriteContexts.ContainsKey(this.DbContext))
             {
-                OpenWriteContexts.TryAdd(DbContext, new SynchronizedCollection<IWriteContext>());
+                this.OpenWriteContexts.TryAdd(this.DbContext, new SynchronizedCollection<IWriteContext>());
             }
 
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log($"{Id}: Enabling write. Initial depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                StaticLogger.Log($"{this.Id}: Enabling write. Initial depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
             }
 
-            if (!OpenWriteContexts[this.DbContext].Contains(context))
+            if (!this.OpenWriteContexts[this.DbContext].Contains(context))
             {
-                OpenWriteContexts[this.DbContext].Add(context);
+                this.OpenWriteContexts[this.DbContext].Add(context);
             }
         }
 
@@ -172,12 +169,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log($"{Id}: Cancelling write. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+                StaticLogger.Log($"{this.Id}: Cancelling write. Current depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
             }
 
-            DbContext.Dispose();
+            this.DbContext.Dispose();
 
-            OpenWriteContexts.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
+            this.OpenWriteContexts.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
         }
 
         /// <summary>
@@ -191,14 +188,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 if (StaticLogger.IsListening)
                 {
-                    StaticLogger.Log($"{Id}: Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                    StaticLogger.Log($"{this.Id}: Saving context changes. Current depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                 }
 
                 int retryCount = 0;
                 Exception lastException;
                 bool retry = false;
 
-                Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
+                Queue<PostEntitySaveEvent> postSaveEvents = this.PreCommitMessages();
 
                 do
                 {
@@ -207,7 +204,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     try
                     {
                         this.DbContext.SaveChanges();
-                        PostCommitMessages(postSaveEvents);
+                        this.PostCommitMessages(postSaveEvents);
                     }
                     catch (Exception ex)
                     {
@@ -238,11 +235,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 if (StaticLogger.IsListening)
                 {
-                    StaticLogger.Log($"{Id}: Async Saving context changes. Current depth {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                    StaticLogger.Log($"{this.Id}: Async Saving context changes. Current depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                 }
-                Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
+                Queue<PostEntitySaveEvent> postSaveEvents = this.PreCommitMessages();
                 await this.DbContext.SaveChangesAsync().ConfigureAwait(false);
-                PostCommitMessages(postSaveEvents);
+                this.PostCommitMessages(postSaveEvents);
             }
         }
 
@@ -261,18 +258,18 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="context"></param>
         public override void EndWrite(IWriteContext context)
         {
-            OpenWriteContexts[this.DbContext].Remove(context);
+            this.OpenWriteContexts[this.DbContext].Remove(context);
 
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log($"{Id}: Ending write at depth of {OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+                StaticLogger.Log($"{this.Id}: Ending write at depth of {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
             }
 
-            if (OpenWriteContexts[this.DbContext].Count == 0)
+            if (this.OpenWriteContexts[this.DbContext].Count == 0)
             {
-                DbContext.Dispose();
+                this.DbContext.Dispose();
 
-                OpenWriteContexts.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
+                this.OpenWriteContexts.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
             }
         }
 
@@ -384,7 +381,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 throw new ArgumentNullException(nameof(o), "Can not update null object");
             }
 
-            CheckAndUpdate(o);
+            this.CheckAndUpdate(o);
         }
 
         /// <summary>
@@ -460,7 +457,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return ToReturn;
         }
 
-        private static DbQuery<T> GenerateBaseQuery(DbSet<T> Set) => GenerateBaseQuery<T>(Set);
+        private static DbQuery<T> GenerateBaseQuery(DbSet<T> Set)
+        {
+            return GenerateBaseQuery<T>(Set);
+        }
 
         private static DbQuery<TDerived> GenerateBaseQuery<TDerived>(DbSet<TDerived> Set) where TDerived : T
         {
@@ -548,7 +548,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 return new Queue<PostEntitySaveEvent>();
             }
 
-            List<DbEntityEntry> modifiedEntities = DbContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Deleted || x.State == EntityState.Modified).ToList();
+            List<DbEntityEntry> modifiedEntities = this.DbContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Deleted || x.State == EntityState.Modified).ToList();
 
             HashSet<object> processed = new HashSet<object>();
 
@@ -583,7 +583,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     {
                         thisEvent.NewValues.Add(propertyName, nextEntry.Property(propertyName).CurrentValue);
                         thisEvent.OldValues.Add(propertyName, null);
-                    } else if(nextEntry.State == EntityState.Deleted)
+                    }
+                    else if (nextEntry.State == EntityState.Deleted)
                     {
                         thisEvent.NewValues.Add(propertyName, null);
                         thisEvent.OldValues.Add(propertyName, nextEntry.Property(propertyName).OriginalValue);
@@ -640,13 +641,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="context">The DbContext to use when getting the WriteContexts</param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "<Pending>")]
-        public SynchronizedCollection<IWriteContext> this[IDbContext context]
-        {
-            get
-            {
-                return OpenWriteContexts.TryGetValue(context, out SynchronizedCollection<IWriteContext> contexts) ? contexts : new SynchronizedCollection<IWriteContext>();
-            }
-        }
+        public SynchronizedCollection<IWriteContext> this[IDbContext context] => OpenWriteContexts.TryGetValue(context, out SynchronizedCollection<IWriteContext> contexts) ? contexts : new SynchronizedCollection<IWriteContext>();
 
         internal void Clear(IDbContext dbContext)
         {

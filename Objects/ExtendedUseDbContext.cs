@@ -32,12 +32,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         {
             get
             {
-                if (CurrentContext is null)
+                if (this.CurrentContext is null)
                 {
-                    CurrentContext = ServiceProvider.GetService(typeof(DbContext)) as DbContext;
+                    this.CurrentContext = this.ServiceProvider.GetService(typeof(DbContext)) as DbContext;
                 }
 
-                return CurrentContext;
+                return this.CurrentContext;
             }
         }
 
@@ -56,8 +56,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <param name="serviceProvider">The connection info to use for the generated contexts</param>
         public ExtendedUseDbContextWrapper(IServiceProvider serviceProvider)
         {
-            GraveYard = new Collection<DbContext>();
-            ServiceProvider = serviceProvider;
+            this.GraveYard = new Collection<DbContext>();
+            this.ServiceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
             //Only dispose of any existing context if we're not already open
             if (newWrite)
             {
-                Dispose();
+                this.Dispose();
             }
         }
 
@@ -78,8 +78,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// </summary>
         public override void Dispose()
         {
-            GraveYard.Add(CurrentContext);
-            CurrentContext = null;
+            this.GraveYard.Add(this.CurrentContext);
+            this.CurrentContext = null;
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
             }
             catch (Exception)
             {
-                CurrentContext = null;
+                this.CurrentContext = null;
                 throw;
             }
         }
@@ -110,7 +110,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
             }
             catch (Exception)
             {
-                CurrentContext = null;
+                this.CurrentContext = null;
                 throw;
             }
         }

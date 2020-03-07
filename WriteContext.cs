@@ -8,6 +8,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// </summary>
     public class WriteContext : IWriteContext
     {
+        private bool disposedValue = false;
+
         /// <summary>
         /// A bool representing whether or not this WriteContext should attempt to commit changes asynchronously
         /// </summary>
@@ -42,7 +44,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -51,7 +53,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!this.disposedValue)
             {
                 if (this.Async)
                 {
@@ -64,15 +66,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                 this.Context.EndWrite(this);
 
-                disposedValue = true;
+                this.disposedValue = true;
             }
         }
 
-        private bool disposedValue = false;
-
-        private void DisableWrite() => this.Context.EndWrite(this);
-
-        private void EnableWrite() => this.Context.BeginWrite(this);
+        private void EnableWrite()
+        {
+            this.Context.BeginWrite(this);
+        }
 
         // To detect redundant calls
         /// <summary>
@@ -80,7 +81,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         ~WriteContext()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
     }
 }

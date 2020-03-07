@@ -1,21 +1,19 @@
 ﻿using Penguin.DependencyInjection.Abstractions.Attributes;
 using Penguin.DependencyInjection.Abstractions.Enums;
+using Penguin.Extensions.Collections;
 using Penguin.Extensions.Strings;
 using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Interfaces;
 using Penguin.Reflection;
+using Penguin.Reflection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
+using System.Data.Entity.Migrations.Infrastructure;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Penguin.Extensions.Collections;
-using System.Data.Entity.Migrations.Infrastructure;
-using System.Reflection;
-using System.Data.Entity.Migrations.Model;
-using Penguin.Reflection.Extensions;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 {
@@ -25,7 +23,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
     [Register(ServiceLifetime.Transient, typeof(IPersistenceContextMigrator))]
     public class EFContextMigrator : IPersistenceContextMigrator
     {
-        public bool IsConfigured => !string.IsNullOrWhiteSpace(PersistenceConnectionInfo.ConnectionString);
+        public bool IsConfigured => !string.IsNullOrWhiteSpace(this.PersistenceConnectionInfo.ConnectionString);
         private PersistenceConnectionInfo PersistenceConnectionInfo { get; set; }
 
         /// <summary>
@@ -36,7 +34,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         {
             Contract.Requires(connectionInfo != null);
 
-            PersistenceConnectionInfo = connectionInfo;
+            this.PersistenceConnectionInfo = connectionInfo;
         }
 
         /// <summary>
@@ -46,11 +44,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         {
             try
             {
-                IsServerConnected(PersistenceConnectionInfo.ConnectionString);
+                IsServerConnected(this.PersistenceConnectionInfo.ConnectionString);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Dictionary<string, string> settings = PersistenceConnectionInfo.ConnectionString.ToDictionary();
+                Dictionary<string, string> settings = this.PersistenceConnectionInfo.ConnectionString.ToDictionary();
                 string dbName = settings["Initial Catalog"];
                 settings["Initial Catalog"] = "master";
 
@@ -65,7 +63,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
                     }
                 }
 
-                IsServerConnected(PersistenceConnectionInfo.ConnectionString);
+                IsServerConnected(this.PersistenceConnectionInfo.ConnectionString);
             }
 
             foreach (Type t in TypeFactory.GetDerivedTypes(typeof(DbMigrationsConfiguration)).Where(t => !t.ContainsGenericParameters))
@@ -79,20 +77,19 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 
                     if (configuration.AutomaticMigrationsEnabled)
                     {
-                        configuration.TargetDatabase = new DbConnectionInfo(PersistenceConnectionInfo.ConnectionString, PersistenceConnectionInfo.ProviderName);
+                        configuration.TargetDatabase = new DbConnectionInfo(this.PersistenceConnectionInfo.ConnectionString, this.PersistenceConnectionInfo.ProviderName);
 
                         DbMigrator migrator = new DbMigrator(configuration);
 
                         try
                         {
                             migrator.Update();
-                        } catch (AutomaticDataLossException ex)
+                        }
+                        catch (AutomaticDataLossException)
                         {
-
                             throw;
 
                             //Come back to this to find data changes
-
 
                             //object _modelDiffer = typeof(DbMigrator).GetProperty("_modelDiffer", BindingFlags.NonPublic | BindingFlags.Instance);
 
