@@ -190,6 +190,16 @@
             Checks to see if the instance is still valid
             </summary>
         </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.DbContext">
+            <summary>
+            The current DbContext instance being referenced
+            </summary>
+        </member>
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.BeginWrite(System.Boolean)">
+            <summary>
+            Preps the DbContext for a new write context
+            </summary>
+        </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.Dispose">
             <summary>
             Handles the disposal logic for the current instance
@@ -220,16 +230,6 @@
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.Set(System.Type)">
             <summary>
             Forwarded to current instance
-            </summary>
-        </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.BeginWrite(System.Boolean)">
-            <summary>
-            Preps the DbContext for a new write context
-            </summary>
-        </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.BaseContextWrapper.DbContext">
-            <summary>
-            The current DbContext instance being referenced
             </summary>
         </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator">
@@ -319,6 +319,11 @@
             Checks if the underlying context has been disposed
             </summary>
         </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.SingleUseDbContext.DbContext">
+            <summary>
+            The backing DbContext
+            </summary>
+        </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.SingleUseDbContext.#ctor(Penguin.Persistence.Abstractions.PersistenceConnectionInfo,System.Boolean)">
             <summary>
             Constructs a new instance of this wrapping class
@@ -333,20 +338,15 @@
             <param name="connectionString">The connection string to use with the DynamicContext</param>
             <param name="preventDispose">Prevents the underlying context from being dispose when Dispose() is called (in case there are lazy loaded entities)</param>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.SingleUseDbContext.Dispose">
-            <summary>
-            Requests that the underlying context be disposed
-            </summary>
-        </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.SingleUseDbContext.BeginWrite(System.Boolean)">
             <summary>
             Detatches all existing items from the context
             </summary>
             <param name="newWrite">True if the context has not already been opened</param>
         </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.SingleUseDbContext.DbContext">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.SingleUseDbContext.Dispose">
             <summary>
-            The backing DbContext
+            Requests that the underlying context be disposed
             </summary>
         </member>
         <member name="T:Penguin.Persistence.Repositories.EntityFramework.WriteContext">
