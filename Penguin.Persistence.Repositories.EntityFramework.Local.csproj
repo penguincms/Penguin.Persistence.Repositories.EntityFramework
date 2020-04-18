@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="Penguin.Projects.Shared\Penguin.Projects.Shared.csproj" />
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net48;netstandard2.0</TargetFrameworks>
+    <PackageProjectUrl>https://github.com/penguincms/Penguin.Persistence.Repositories.EntityFramework</PackageProjectUrl>
+    <Version>4.2.4</Version>
+    <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
+    <RootNamespace>Penguin.Persistence.Repositories.EntityFramework</RootNamespace>
+    <AssemblyName>Penguin.Persistence.Repositories.EntityFramework</AssemblyName>
+    <DocumentationFile>Penguin.Persistence.Repositories.EntityFramework.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="dist\**" />
+    <Compile Remove="lib\**" />
+    <Compile Remove="packages\**" />
+    <EmbeddedResource Remove="dist\**" />
+    <EmbeddedResource Remove="lib\**" />
+    <EmbeddedResource Remove="packages\**" />
+    <None Remove="dist\**" />
+    <None Remove="lib\**" />
+    <None Remove="packages\**" />
+    <ProjectReference Include="..\Penguin.Cms.Entities\Penguin.Cms.Entities.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Debugging\Penguin.Debugging.Local.csproj" />
+    <ProjectReference Include="..\Penguin.DependencyInjection.Abstractions\Penguin.DependencyInjection.Abstractions.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Entities.Abstractions\Penguin.Entities.Abstractions.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Extensions.Collections\Penguin.Extensions.Collections.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Extensions.Exceptions\Penguin.Extensions.Exceptions.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Extensions.String\Penguin.Extensions.String.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Messaging.Abstractions\Penguin.Messaging.Abstractions.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Messaging.Core\Penguin.Messaging.Core.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Messaging.Logging\Penguin.Messaging.Logging.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Messaging.Persistence\Penguin.Messaging.Persistence.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Persistence.Abstractions\Penguin.Persistence.Abstractions.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Persistence.EntityFramework\Penguin.Persistence.EntityFramework.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Reflection\Penguin.Reflection.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Reflection.Abstractions\Penguin.Reflection.Abstractions.Local.csproj" />
+    <ProjectReference Include="..\Penguin.Reflection.Extensions\Penguin.Reflection.Extensions.Local.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove=".gitignore" />
+    <None Remove="LocalPublish.bat" />
+    <None Remove="NugetPublish.bat" />
+    <None Remove="Pack.bat" />
+    <None Remove="packages.config" />
+    <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetCore.xml" />
+    <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.1.1.0.nupkg" />
+    <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.1.1.1.nupkg" />
+    <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.1.1.2.nupkg" />
+    <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
+  </ItemGroup>
+</Project>
