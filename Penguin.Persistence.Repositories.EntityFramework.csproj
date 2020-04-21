@@ -19,10 +19,10 @@
     <None Remove="dist\**" />
     <None Remove="lib\**" />
     <None Remove="packages\**" />
-    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.1-T9UFJ6O" />
-    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.5-T9UFJ6O" />
-    <PackageReference Include="Penguin.Extensions.Collections" Version="2.0.4-T9UFJ6O" />
-    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9UFJ6O" />
+    <PackageReference Include="Penguin.Messaging.Logging" Version="3.0.1-T9UW4G4" />
+    <PackageReference Include="Penguin.Messaging.Persistence" Version="2.2.5-T9UW4G4" />
+    <PackageReference Include="Penguin.Extensions.Collections" Version="2.0.4-T9UW4G4" />
+    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="4.0.2-T9UW4G4" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
