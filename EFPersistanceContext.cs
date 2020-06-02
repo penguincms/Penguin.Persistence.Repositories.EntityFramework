@@ -30,6 +30,14 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// <typeparam name="T">The type of the object contained in this context</typeparam>
     public class EFPersistenceContext<T> : PersistenceContext<T> where T : KeyedObject
     {
+        private static readonly bool HasIncludes;
+
+        private static readonly string[] Includes = IncludeStrings(typeof(T)).OrderBy(s => s.Split('.').Length - 1).ToArray();
+
+        private readonly WriteContextBag OpenWriteContexts = new WriteContextBag();
+
+        private bool? isValid;
+
         /// <summary>
         /// The backing Entity Framework DbContext for this context
         /// </summary>
@@ -73,8 +81,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         private string Id { get; set; } = $"{Guid.NewGuid()} <{typeof(T).FullName}>";
-        private bool? isValid { get; set; }
-        private WriteContextBag OpenWriteContexts { get; set; } = new WriteContextBag();
+
+        static EFPersistenceContext()
+        {
+            HasIncludes = Includes.Length > 0;
+        }
 
         /// <summary>
         /// Creates a new instance of this persistence context
@@ -84,15 +95,13 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>")]
         public EFPersistenceContext(IDbContext dbContext, MessageBus messageBus = null) : base(typeof(T), null)
         {
-            Contract.Requires(dbContext != null);
-
             this.MessageBus = messageBus;
             if (StaticLogger.IsListening)
             {
                 Penguin.Debugging.StaticLogger.Log($"{this.Id}: Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
             }
 
-            this.DbContext = dbContext;
+            this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
             if (!IsValidType(dbContext, typeof(T)))
             {
@@ -287,10 +296,15 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 return null;
             }
 
-            List<string> includes = IncludeStrings(typeof(T)).OrderBy(s => s.Split('.').Length - 1).Select(s => $"Root.{s}").ToList();
+            if (!HasIncludes)
+            {
+                return toReturn;
+            }
 
-            Dictionary<string, List<object>> navigationProperties = new Dictionary<string, List<object>>(includes.Count);
-            Dictionary<object, DbEntityEntry> EntityEntries = new Dictionary<object, DbEntityEntry>(includes.Count);
+            IEnumerable<string> includes = Includes.Select(s => $"Root.{s}");
+
+            Dictionary<string, List<object>> navigationProperties = new Dictionary<string, List<object>>(Includes.Length);
+            Dictionary<object, DbEntityEntry> EntityEntries = new Dictionary<object, DbEntityEntry>(Includes.Length);
 
             navigationProperties.Add("Root", new List<object>() { toReturn });
             EntityEntries.Add(toReturn, this.DbContext.Entry(toReturn));
