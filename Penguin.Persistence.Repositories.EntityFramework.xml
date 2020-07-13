@@ -115,7 +115,7 @@
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.GetWriteContexts">
             <summary>
-            Returns an immutable array of all writecontexts currently open on this persistence context
+            Returns an immutable array of all write contexts currently open on this persistence context
             </summary>
             <returns></returns>
         </member>
@@ -123,7 +123,7 @@
             <summary>
             Returns a subset including only the derived type from the underlying persistence context
             </summary>
-            <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
+            <typeparam name="TDerived">A type derived from the persistence context type</typeparam>
             <returns>A subset including only the derived type from the underlying persistence context</returns>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.Update(`0)">

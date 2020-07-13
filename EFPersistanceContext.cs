@@ -366,7 +366,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         }
 
         /// <summary>
-        /// Returns an immutable array of all writecontexts currently open on this persistence context
+        /// Returns an immutable array of all write contexts currently open on this persistence context
         /// </summary>
         /// <returns></returns>
         public override IEnumerable<IWriteContext> GetWriteContexts()
@@ -377,7 +377,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <summary>
         /// Returns a subset including only the derived type from the underlying persistence context
         /// </summary>
-        /// <typeparam name="TDerived">A type derived from the persitence context type</typeparam>
+        /// <typeparam name="TDerived">A type derived from the persistence context type</typeparam>
         /// <returns>A subset including only the derived type from the underlying persistence context</returns>
         public override IQueryable<TDerived> OfType<TDerived>()
         {
@@ -433,7 +433,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns>A list of strings to Include while accessing the database</returns>
         protected static List<string> IncludeStrings(Stack<Type> toGenerate, string NameSpace = "", bool Recursive = true, int? depth = null)
         {
-            Contract.Requires(toGenerate != null);
+            if (toGenerate is null)
+            {
+                throw new ArgumentNullException(nameof(toGenerate));
+            }
 
             List<string> ToReturn = new List<string>();
 
@@ -647,8 +650,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// </summary>
     public class WriteContextBag
     {
-        private static readonly ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();
-
         /// <summary>
         /// Accesses contexts in this bag that are associated with the specified DbContext
         /// </summary>
@@ -656,6 +657,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "<Pending>")]
         public SynchronizedCollection<IWriteContext> this[IDbContext context] => OpenWriteContexts.TryGetValue(context, out SynchronizedCollection<IWriteContext> contexts) ? contexts : new SynchronizedCollection<IWriteContext>();
+
+        private static readonly ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();
 
         internal void Clear(IDbContext dbContext)
         {

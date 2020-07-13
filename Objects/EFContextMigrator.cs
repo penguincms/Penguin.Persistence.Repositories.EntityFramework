@@ -32,8 +32,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <param name="connectionInfo"></param>
         public EFContextMigrator(PersistenceConnectionInfo connectionInfo)
         {
-            Contract.Requires(connectionInfo != null);
-
             this.PersistenceConnectionInfo = connectionInfo;
         }
 
@@ -68,7 +66,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 
             foreach (Type t in TypeFactory.GetDerivedTypes(typeof(DbMigrationsConfiguration)).Where(t => !t.ContainsGenericParameters))
             {
-                //Allow for overridden migration configs via inheritence
+                //Allow for overridden migration configs via inheritance
                 Type derived = TypeFactory.GetMostDerivedType(t);
 
                 if (derived is null || derived == t)
