@@ -117,7 +117,13 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             DbSet<T> set = this.DbContext.Set<T>();
 
-            set.Add(o);
+            try
+            {
+                set.Add(o);
+            } catch(System.InvalidOperationException ex) when (ex.Message.Contains("has multiplicity 1 or 0..1."))
+            {
+                throw new InvalidOperationException("Something went wrong adding the entity to the database. Make sure any linking properties inherit from ICollection. Properties can NOT be interfaces!", ex);
+            }
         }
 
         /// <summary>
