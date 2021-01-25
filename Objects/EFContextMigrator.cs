@@ -12,7 +12,6 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Migrations.Infrastructure;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Penguin.Persistence.Repositories.EntityFramework.Objects
@@ -35,9 +34,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
             this.PersistenceConnectionInfo = connectionInfo;
         }
 
+
         /// <summary>
         /// Updates the database to reflect the current EntityFramework Schema
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public void Migrate()
         {
             try

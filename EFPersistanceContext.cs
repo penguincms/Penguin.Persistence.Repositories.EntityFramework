@@ -16,7 +16,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -92,7 +91,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         /// <param name="dbContext">The underlying DbContext to use as the data source</param>
         /// <param name="messageBus">An optional message bus for publishing persistence events</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "<Pending>")]
         public EFPersistenceContext(IDbContext dbContext, MessageBus messageBus = null) : base(typeof(T), null)
         {
             this.MessageBus = messageBus;
@@ -120,7 +118,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             try
             {
                 set.Add(o);
-            } catch(System.InvalidOperationException ex) when (ex.Message.Contains("has multiplicity 1 or 0..1."))
+            }
+            catch (System.InvalidOperationException ex) when (ex.Message.Contains("has multiplicity 1 or 0..1."))
             {
                 throw new InvalidOperationException("Something went wrong adding the entity to the database. Make sure any linking properties inherit from ICollection. Properties can NOT be interfaces!", ex);
             }
@@ -161,9 +160,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             this.DbContext.BeginWrite(!this.WriteEnabled);
 
-            if (!this.OpenWriteContexts.ContainsKey(this.DbContext))
+            if (!WriteContextBag.ContainsKey(this.DbContext))
             {
-                this.OpenWriteContexts.TryAdd(this.DbContext, new SynchronizedCollection<IWriteContext>());
+                WriteContextBag.TryAdd(this.DbContext, new SynchronizedCollection<IWriteContext>());
             }
 
             if (StaticLogger.IsListening)
@@ -189,7 +188,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             this.DbContext.Dispose();
 
-            this.OpenWriteContexts.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
+            WriteContextBag.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
         }
 
         /// <summary>
@@ -207,35 +206,34 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 }
 
                 int retryCount = 0;
-                Exception lastException;
+                
+                //Why is this here?
                 bool retry = false;
 
                 Queue<PostEntitySaveEvent> postSaveEvents = this.PreCommitMessages();
 
                 do
                 {
-                    lastException = null;
 
                     try
                     {
                         this.DbContext.SaveChanges();
                         this.PostCommitMessages(postSaveEvents);
-                    }
-                    catch (Exception ex)
+                        break;
+                    } 
+                    catch (Exception) when (retryCount ++ < 5 && retry)
                     {
-                        lastException = ex;
                         Task.Delay(100).Wait();
+                    } 
+                    catch (Exception)
+                    {
+                        WriteContextBag.Clear(this.DbContext);
+
+                        this.DbContext.Dispose();
+
+                        throw;
                     }
-                } while (retry && retryCount++ < 5 && lastException != null);
-
-                if (lastException != null)
-                {
-                    this.OpenWriteContexts.Clear(this.DbContext);
-
-                    this.DbContext.Dispose();
-
-                    ExceptionDispatchInfo.Capture(lastException).Throw();
-                }
+                } while (true);
             }
         }
 
@@ -284,7 +282,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 this.DbContext.Dispose();
 
-                this.OpenWriteContexts.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
+                WriteContextBag.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
             }
         }
 
@@ -499,17 +497,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return dbQuery;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "I dont know of any other way to get the value but to test for an error")]
         private static bool IsValidType(IDbContext holder, Type toCheck)
         {
-            //try
-            //{
             return holder.Set(toCheck) != null;
-            //}
-            //catch (Exception)
-            //{
-            //    return false;
-            //}
         }
 
         private bool CheckAndUpdate(T o)
@@ -666,22 +656,22 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
         private static readonly ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();
 
-        internal void Clear(IDbContext dbContext)
+        internal static void Clear(IDbContext dbContext)
         {
             OpenWriteContexts.TryRemove(dbContext, out _);
         }
 
-        internal bool ContainsKey(IDbContext dbContext)
+        internal static bool ContainsKey(IDbContext dbContext)
         {
             return OpenWriteContexts.ContainsKey(dbContext);
         }
 
-        internal bool TryAdd(IDbContext dbContext, SynchronizedCollection<IWriteContext> synchronizedCollection)
+        internal static bool TryAdd(IDbContext dbContext, SynchronizedCollection<IWriteContext> synchronizedCollection)
         {
             return OpenWriteContexts.TryAdd(dbContext, synchronizedCollection);
         }
 
-        internal bool TryRemove(IDbContext dbContext, out SynchronizedCollection<IWriteContext> synchronizedCollection)
+        internal static bool TryRemove(IDbContext dbContext, out SynchronizedCollection<IWriteContext> synchronizedCollection)
         {
             return OpenWriteContexts.TryRemove(dbContext, out synchronizedCollection);
         }

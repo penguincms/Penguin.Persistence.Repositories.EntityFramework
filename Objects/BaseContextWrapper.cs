@@ -73,6 +73,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public DbSet Set(Type toCheck) => DbContext.Set(toCheck);
+        public DbSet Set(Type toCheck)
+        {
+            return this.DbContext.Set(toCheck);
+        }
     }
 }

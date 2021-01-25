@@ -8,7 +8,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// </summary>
     public class WriteContext : IWriteContext
     {
-        private bool disposedValue = false;
+        private bool disposedValue;
 
         /// <summary>
         /// A bool representing whether or not this WriteContext should attempt to commit changes asynchronously

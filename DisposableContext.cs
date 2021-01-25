@@ -5,7 +5,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
     /// <summary>
     /// A single use disposable EF context. Not thread safe.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "<Pending>")]
     public class DisposableContext<T> : EFPersistenceContext<T> where T : KeyedObject
     {
         /// <summary>
