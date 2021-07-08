@@ -2,7 +2,7 @@
   <Import Project="Penguin.Projects.Shared\Penguin.Projects.Shared.csproj" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net48;netstandard2.0</TargetFrameworks>
-    <PackageProjectUrl>https://github.com/penguincms/Penguin.Persistence.Repositories.EntityFramework</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/PenguinCMS/Penguin.Persistence.Repositories.EntityFramework</PackageProjectUrl>
     <Version>5.0.5</Version>
     <Description>Provides an IPersistenceContext implementation allowing Entity Framework providers to be used as data sources in Penguin repositories</Description>
     <RootNamespace>Penguin.Persistence.Repositories.EntityFramework</RootNamespace>
@@ -19,10 +19,10 @@
     <None Remove="dist\**" />
     <None Remove="lib\**" />
     <None Remove="packages\**" />
-    <PackageReference Include="Penguin.Messaging.Persistence" Version="5.0.4" />
-    <PackageReference Include="Penguin.Messaging.Logging" Version="5.0.4" />
-    <PackageReference Include="Penguin.Extensions.Collections" Version="5.0.6-TAEO1KM" />
-    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="5.0.6-TAEO1KM" />
+    <PackageReference Include="Penguin.Messaging.Persistence" Version="5.0.6-TAHULSY" />
+    <PackageReference Include="Penguin.Extensions.Collections" Version="5.0.6-TAHULSY" />
+    <PackageReference Include="Penguin.Messaging.Logging" Version="5.0.6-TAHULSY" />
+    <PackageReference Include="Penguin.Persistence.EntityFramework" Version="5.0.6-TAHULSY" />
   </ItemGroup>
   <ItemGroup>
     <None Remove=".gitignore" />

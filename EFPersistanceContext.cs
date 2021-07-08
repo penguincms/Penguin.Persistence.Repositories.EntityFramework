@@ -18,7 +18,6 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace Penguin.Persistence.Repositories.EntityFramework
@@ -205,8 +204,30 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     StaticLogger.Log($"{this.Id}: Saving context changes. Current depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                 }
 
+
+                /* Unmerged change from project 'Penguin.Persistence.Repositories.EntityFramework.Local (net48)'
+                Before:
+                                int retryCount = 0;
+
+                                //Why is this here?
+                After:
+                                int retryCount = 0;
+
+                                //Why is this here?
+                */
+
+                /* Unmerged change from project 'Penguin.Persistence.Repositories.EntityFramework.Local (netstandard2.0)'
+                Before:
+                                int retryCount = 0;
+
+                                //Why is this here?
+                After:
+                                int retryCount = 0;
+
+                                //Why is this here?
+                */
                 int retryCount = 0;
-                
+
                 //Why is this here?
                 bool retry = false;
 
@@ -220,11 +241,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                         this.DbContext.SaveChanges();
                         this.PostCommitMessages(postSaveEvents);
                         break;
-                    } 
-                    catch (Exception) when (retryCount ++ < 5 && retry)
+                    }
+                    catch (Exception) when (retryCount++ < 5 && retry)
                     {
                         Task.Delay(100).Wait();
-                    } 
+                    }
                     catch (Exception)
                     {
                         WriteContextBag.Clear(this.DbContext);
@@ -535,7 +556,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 switch (psEvent.EntityState)
                 {
                     case EntityState.Added:
-                        this.MessageBus?.Send(Activator.CreateInstance(typeof(Created<>).MakeGenericType(thisType), psEvent.Entity)); ;
+                        this.MessageBus?.Send(Activator.CreateInstance(typeof(Created<>).MakeGenericType(thisType), psEvent.Entity));
+                        ;
                         goto case EntityState.Modified;
 
                     case EntityState.Modified:
@@ -651,7 +673,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         /// <param name="context">The DbContext to use when getting the WriteContexts</param>
         /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "<Pending>")]
         public SynchronizedCollection<IWriteContext> this[IDbContext context] => OpenWriteContexts.TryGetValue(context, out SynchronizedCollection<IWriteContext> contexts) ? contexts : new SynchronizedCollection<IWriteContext>();
 
         private static readonly ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();

@@ -38,7 +38,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <summary>
         /// Updates the database to reflect the current EntityFramework Schema
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public void Migrate()
         {
             try
