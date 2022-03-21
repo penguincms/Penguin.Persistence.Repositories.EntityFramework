@@ -41,41 +41,26 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// </summary>
         /// <param name="entity">The entity to get the entry for</param>
         /// <returns>The entity entry for the object</returns>
-        public DbEntityEntry Entry(object entity)
-        {
-            return this.DbContext.Entry(entity);
-        }
+        public DbEntityEntry Entry(object entity) => this.DbContext.Entry(entity);
 
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public virtual void SaveChanges()
-        {
-            this.DbContext.SaveChanges();
-        }
+        public virtual void SaveChanges() => this.DbContext.SaveChanges();
 
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public virtual Task SaveChangesAsync()
-        {
-            return this.DbContext.SaveChangesAsync();
-        }
+        public virtual Task SaveChangesAsync() => this.DbContext.SaveChangesAsync();
 
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public DbSet<T> Set<T>() where T : class
-        {
-            return this.DbContext.Set<T>();
-        }
+        public DbSet<T> Set<T>() where T : class => this.DbContext.Set<T>();
 
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public DbSet Set(Type toCheck)
-        {
-            return this.DbContext.Set(toCheck);
-        }
+        public DbSet Set(Type toCheck) => this.DbContext.Set(toCheck);
     }
 }
