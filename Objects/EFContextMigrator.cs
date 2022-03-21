@@ -1,4 +1,4 @@
-﻿using Penguin.DependencyInjection.Abstractions.Attributes;
+using Penguin.DependencyInjection.Abstractions.Attributes;
 using Penguin.DependencyInjection.Abstractions.Enums;
 using Penguin.Extensions.Collections;
 using Penguin.Extensions.Strings;
@@ -33,7 +33,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         {
             this.PersistenceConnectionInfo = connectionInfo;
         }
-
 
         /// <summary>
         /// Updates the database to reflect the current EntityFramework Schema

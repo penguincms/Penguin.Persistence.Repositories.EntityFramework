@@ -1,4 +1,4 @@
-﻿using Penguin.Debugging;
+using Penguin.Debugging;
 using Penguin.Extensions.Strings;
 using Penguin.Messaging.Core;
 using Penguin.Messaging.Persistence.Messages;
@@ -200,7 +200,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 {
                     StaticLogger.Log($"{this.Id}: Saving context changes. Current depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
                 }
-
 
                 /* Unmerged change from project 'Penguin.Persistence.Repositories.EntityFramework.Local (net48)'
                 Before:
