@@ -3,7 +3,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Threading.Tasks;
 
-namespace Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces
+namespace Penguin.Persistence.Repositories.EntityFramework.Interfaces
 {
     /// <summary>
     /// An interface ensuring standard access for any type attempting to fill the role of a DbContext
@@ -11,7 +11,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfac
     public interface IDbContext
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        System.Data.Entity.Infrastructure.DbChangeTracker ChangeTracker { get; }
+        DbChangeTracker ChangeTracker { get; }
 
         void BeginWrite(bool NewWrite);
 

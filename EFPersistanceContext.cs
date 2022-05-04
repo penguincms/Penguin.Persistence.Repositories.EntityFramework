@@ -1,11 +1,11 @@
 using Penguin.Debugging;
-using Penguin.Extensions.Strings;
+using Penguin.Extensions.String;
 using Penguin.Messaging.Core;
 using Penguin.Messaging.Persistence.Messages;
 using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Attributes.Control;
 using Penguin.Persistence.Abstractions.Interfaces;
-using Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces;
+using Penguin.Persistence.Repositories.EntityFramework.Interfaces;
 using Penguin.Persistence.Repositories.EntityFramework.Objects;
 using Penguin.Reflection;
 using Penguin.Reflection.Abstractions;
@@ -72,7 +72,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         protected override IQueryable<T> PrimaryDataSource
         {
-            get => this.IsValid ? (GenerateBaseQuery(this.DbContext.Set<T>())) : new List<T>() as IQueryable<T>;
+            get => this.IsValid ? GenerateBaseQuery(this.DbContext.Set<T>()) : new List<T>() as IQueryable<T>;
             set
             {
             }
@@ -116,7 +116,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             try
             {
-                set.Add(o);
+                _ = set.Add(o);
             }
             catch (System.InvalidOperationException ex) when (ex.Message.Contains("has multiplicity 1 or 0..1."))
             {
@@ -138,7 +138,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             if (!this.CheckAndUpdate(o))
             {
                 DbSet<T> set = this.DbContext.Set<T>();
-                set.Add(o);
+                _ = set.Add(o);
             }
         }
 
@@ -146,7 +146,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// Calls AddRange on the underlying context
         /// </summary>
         /// <param name="o">The objects to add</param>
-        public override void AddRange(IEnumerable<T> o) => this.DbContext.Set<T>().AddRange(o);
+        public override void AddRange(IEnumerable<T> o)
+        {
+            _ = this.DbContext.Set<T>().AddRange(o);
+        }
 
         /// <summary>
         /// Takes the specified WriteContext and registers it, then enables data persistence. If this is the first open context, all entities retrieved before this point are detached to prevent accidental saves
@@ -158,7 +161,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             if (!WriteContextBag.ContainsKey(this.DbContext))
             {
-                WriteContextBag.TryAdd(this.DbContext, new SynchronizedCollection<IWriteContext>());
+                _ = WriteContextBag.TryAdd(this.DbContext, new SynchronizedCollection<IWriteContext>());
             }
 
             if (StaticLogger.IsListening)
@@ -184,7 +187,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             this.DbContext.Dispose();
 
-            WriteContextBag.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
+            _ = WriteContextBag.TryRemove(this.DbContext, out _);
         }
 
         /// <summary>
@@ -277,7 +280,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// Deletes an of entities from the underlying context. If auditableEntities, simply sets the date deleted
         /// </summary>
         /// <param name="o">the object to delete</param>
-        public override void Delete(T o) => this.DbContext.Set<T>().Remove(o);
+        public override void Delete(T o)
+        {
+            _ = this.DbContext.Set<T>().Remove(o);
+        }
 
         /// <summary>
         /// Closes the provided writecontext, and persists changes if it was the last open context (then detaches entities)
@@ -285,7 +291,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="context"></param>
         public override void EndWrite(IWriteContext context)
         {
-            this.OpenWriteContexts[this.DbContext].Remove(context);
+            _ = this.OpenWriteContexts[this.DbContext].Remove(context);
 
             if (StaticLogger.IsListening)
             {
@@ -296,7 +302,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             {
                 this.DbContext.Dispose();
 
-                WriteContextBag.TryRemove(this.DbContext, out SynchronizedCollection<IWriteContext> _);
+                _ = WriteContextBag.TryRemove(this.DbContext, out _);
             }
         }
 
@@ -387,14 +393,20 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// Returns an immutable array of all write contexts currently open on this persistence context
         /// </summary>
         /// <returns></returns>
-        public override IEnumerable<IWriteContext> GetWriteContexts() => this.OpenWriteContexts[this.DbContext].ToList();
+        public override IEnumerable<IWriteContext> GetWriteContexts()
+        {
+            return this.OpenWriteContexts[this.DbContext].ToList();
+        }
 
         /// <summary>
         /// Returns a subset including only the derived type from the underlying persistence context
         /// </summary>
         /// <typeparam name="TDerived">A type derived from the persistence context type</typeparam>
         /// <returns>A subset including only the derived type from the underlying persistence context</returns>
-        public override IQueryable<TDerived> OfType<TDerived>() => GenerateBaseQuery(this.DbContext.Set<TDerived>());
+        public override IQueryable<TDerived> OfType<TDerived>()
+        {
+            return GenerateBaseQuery(this.DbContext.Set<TDerived>());
+        }
 
         /// <summary>
         /// Updates a list of objects on the underlying DbContext
@@ -407,14 +419,17 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 throw new ArgumentNullException(nameof(o), "Can not update null object");
             }
 
-            this.CheckAndUpdate(o);
+            _ = this.CheckAndUpdate(o);
         }
 
         /// <summary>
         /// Generates a new WriteContext capable of opening this PersistenceContext
         /// </summary>
         /// <returns>A new WriteContext capable of opening this PersistenceContext</returns>
-        public override IWriteContext WriteContext() => new WriteContext(this);
+        public override IWriteContext WriteContext()
+        {
+            return new WriteContext(this);
+        }
 
         /// <summary>
         /// Generates a list of strings to Include while accessing the database, using the EagerLoad attributes found on the properties
@@ -476,14 +491,17 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                     ToReturn.AddRange(IncludeStrings(toGenerate, thisProp + ".", recurse, thisPropDepth));
 
-                    toGenerate.Pop();
+                    _ = toGenerate.Pop();
                 }
             }
 
             return ToReturn;
         }
 
-        private static DbQuery<T> GenerateBaseQuery(DbSet<T> Set) => GenerateBaseQuery<T>(Set);
+        private static DbQuery<T> GenerateBaseQuery(DbSet<T> Set)
+        {
+            return GenerateBaseQuery<T>(Set);
+        }
 
         private static DbQuery<TDerived> GenerateBaseQuery<TDerived>(DbSet<TDerived> Set) where TDerived : T
         {
@@ -499,7 +517,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return dbQuery;
         }
 
-        private static bool IsValidType(IDbContext holder, Type toCheck) => holder.Set(toCheck) != null;
+        private static bool IsValidType(IDbContext holder, Type toCheck)
+        {
+            return holder.Set(toCheck) != null;
+        }
 
         private bool CheckAndUpdate(T o)
         {
@@ -622,7 +643,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                         break;
                 }
 
-                processed.Add(nextEntry.Entity);
+                _ = processed.Add(nextEntry.Entity);
             }
 
             this.MessageBus.Send(new PreCommit());
@@ -655,12 +676,24 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
         private static readonly ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();
 
-        internal static void Clear(IDbContext dbContext) => OpenWriteContexts.TryRemove(dbContext, out _);
+        internal static void Clear(IDbContext dbContext)
+        {
+            _ = OpenWriteContexts.TryRemove(dbContext, out _);
+        }
 
-        internal static bool ContainsKey(IDbContext dbContext) => OpenWriteContexts.ContainsKey(dbContext);
+        internal static bool ContainsKey(IDbContext dbContext)
+        {
+            return OpenWriteContexts.ContainsKey(dbContext);
+        }
 
-        internal static bool TryAdd(IDbContext dbContext, SynchronizedCollection<IWriteContext> synchronizedCollection) => OpenWriteContexts.TryAdd(dbContext, synchronizedCollection);
+        internal static bool TryAdd(IDbContext dbContext, SynchronizedCollection<IWriteContext> synchronizedCollection)
+        {
+            return OpenWriteContexts.TryAdd(dbContext, synchronizedCollection);
+        }
 
-        internal static bool TryRemove(IDbContext dbContext, out SynchronizedCollection<IWriteContext> synchronizedCollection) => OpenWriteContexts.TryRemove(dbContext, out synchronizedCollection);
+        internal static bool TryRemove(IDbContext dbContext, out SynchronizedCollection<IWriteContext> synchronizedCollection)
+        {
+            return OpenWriteContexts.TryRemove(dbContext, out synchronizedCollection);
+        }
     }
 }

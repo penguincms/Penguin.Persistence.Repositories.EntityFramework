@@ -1,6 +1,6 @@
 ﻿using Penguin.DependencyInjection.Abstractions.Attributes;
 using Penguin.DependencyInjection.Abstractions.Enums;
-using Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces;
+using Penguin.Persistence.Repositories.EntityFramework.Interfaces;
 using System;
 using System.Collections.ObjectModel;
 using System.Data.Entity;

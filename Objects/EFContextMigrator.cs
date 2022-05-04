@@ -1,7 +1,7 @@
 using Penguin.DependencyInjection.Abstractions.Attributes;
 using Penguin.DependencyInjection.Abstractions.Enums;
 using Penguin.Extensions.Collections;
-using Penguin.Extensions.Strings;
+using Penguin.Extensions.String;
 using Penguin.Persistence.Abstractions;
 using Penguin.Persistence.Abstractions.Interfaces;
 using Penguin.Reflection;
@@ -56,7 +56,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
                     using (SqlCommand command = new SqlCommand($"CREATE DATABASE {dbName}", connection))
                     {
                         command.Connection.Open();
-                        command.ExecuteNonQuery();
+                        _ = command.ExecuteNonQuery();
                     }
                 }
 

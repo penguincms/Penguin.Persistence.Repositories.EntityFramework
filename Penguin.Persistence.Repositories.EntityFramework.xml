@@ -46,7 +46,7 @@
             Returns an IQueriable that accesses the current DbSet
             </summary>
         </member>
-        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.#ctor(Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces.IDbContext,Penguin.Messaging.Core.MessageBus)">
+        <member name="M:Penguin.Persistence.Repositories.EntityFramework.EFPersistenceContext`1.#ctor(Penguin.Persistence.Repositories.EntityFramework.Interfaces.IDbContext,Penguin.Messaging.Core.MessageBus)">
             <summary>
             Creates a new instance of this persistence context
             </summary>
@@ -163,14 +163,14 @@
             exists to provide all context types with access to the same bag through a shared class
             </summary>
         </member>
-        <member name="P:Penguin.Persistence.Repositories.EntityFramework.WriteContextBag.Item(Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces.IDbContext)">
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.WriteContextBag.Item(Penguin.Persistence.Repositories.EntityFramework.Interfaces.IDbContext)">
             <summary>
             Accesses contexts in this bag that are associated with the specified DbContext
             </summary>
             <param name="context">The DbContext to use when getting the WriteContexts</param>
             <returns></returns>
         </member>
-        <member name="T:Penguin.Persistence.Repositories.EntityFramework.Abstractions.Interfaces.IDbContext">
+        <member name="T:Penguin.Persistence.Repositories.EntityFramework.Interfaces.IDbContext">
             <summary>
             An interface ensuring standard access for any type attempting to fill the role of a DbContext
             </summary>

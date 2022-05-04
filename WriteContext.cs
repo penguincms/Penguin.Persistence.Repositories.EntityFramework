@@ -34,7 +34,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <summary>
         /// Cancels any open writes and detaches all entities
         /// </summary>
-        public void CancelWrite() => this.Context.CancelWrite();
+        public void CancelWrite()
+        {
+            this.Context.CancelWrite();
+        }
 
         /// <summary>
         /// Disposes of this WriteContext and attempts to persist any changes
@@ -67,7 +70,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             }
         }
 
-        private void EnableWrite() => this.Context.BeginWrite(this);
+        private void EnableWrite()
+        {
+            this.Context.BeginWrite(this);
+        }
 
         // To detect redundant calls
         /// <summary>
