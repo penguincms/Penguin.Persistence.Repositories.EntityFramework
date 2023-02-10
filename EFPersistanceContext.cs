@@ -32,7 +32,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
         private static readonly string[] Includes = IncludeStrings(typeof(T)).OrderBy(s => s.Split('.').Length - 1).ToArray();
 
-        private readonly WriteContextBag OpenWriteContexts = new WriteContextBag();
+        private readonly WriteContextBag OpenWriteContexts = new();
 
         private bool? isValid;
 
@@ -48,19 +48,19 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             get
             {
-                if (!this.isValid.HasValue)
+                if (!isValid.HasValue)
                 {
-                    this.isValid = IsValidType(this.DbContext, typeof(T));
+                    isValid = IsValidType(DbContext, typeof(T));
                 }
 
-                return this.isValid.Value;
+                return isValid.Value;
             }
         }
 
         /// <summary>
         /// If true, this context has a valid open WriteContext
         /// </summary>
-        public virtual bool WriteEnabled => this.GetWriteContexts().Any();
+        public virtual bool WriteEnabled => GetWriteContexts().Any();
 
         /// <summary>
         /// The optionally provided message bus for sending persistence messages over
@@ -72,7 +72,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         protected override IQueryable<T> PrimaryDataSource
         {
-            get => this.IsValid ? GenerateBaseQuery(this.DbContext.Set<T>()) : new List<T>() as IQueryable<T>;
+            get => IsValid ? GenerateBaseQuery(DbContext.Set<T>()) : new List<T>() as IQueryable<T>;
             set
             {
             }
@@ -92,17 +92,17 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="messageBus">An optional message bus for publishing persistence events</param>
         public EFPersistenceContext(IDbContext dbContext, MessageBus messageBus = null) : base(typeof(T), null)
         {
-            this.MessageBus = messageBus;
+            MessageBus = messageBus;
             if (StaticLogger.IsListening)
             {
-                Penguin.Debugging.StaticLogger.Log($"{this.Id}: Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
+                Penguin.Debugging.StaticLogger.Log($"{Id}: Creating context for type {typeof(T).FullName}", StaticLogger.LoggingLevel.Call);
             }
 
-            this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
             if (!IsValidType(dbContext, typeof(T)))
             {
-                throw new ArgumentException($"Can not create {nameof(EFPersistenceContext<T>)}. {typeof(T).FullName} was not found on the {nameof(this.DbContext)}");
+                throw new ArgumentException($"Can not create {nameof(EFPersistenceContext<T>)}. {typeof(T).FullName} was not found on the {nameof(DbContext)}");
             }
         }
 
@@ -112,7 +112,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="o">The objects to add</param>
         public override void Add(T o)
         {
-            DbSet<T> set = this.DbContext.Set<T>();
+            DbSet<T> set = DbContext.Set<T>();
 
             try
             {
@@ -135,9 +135,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 throw new ArgumentNullException(nameof(o), "Can not add or update null object");
             }
 
-            if (!this.CheckAndUpdate(o))
+            if (!CheckAndUpdate(o))
             {
-                DbSet<T> set = this.DbContext.Set<T>();
+                DbSet<T> set = DbContext.Set<T>();
                 _ = set.Add(o);
             }
         }
@@ -148,7 +148,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="o">The objects to add</param>
         public override void AddRange(IEnumerable<T> o)
         {
-            _ = this.DbContext.Set<T>().AddRange(o);
+            _ = DbContext.Set<T>().AddRange(o);
         }
 
         /// <summary>
@@ -157,21 +157,21 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="context">The write context to open this persistence context with</param>
         public override void BeginWrite(IWriteContext context)
         {
-            this.DbContext.BeginWrite(!this.WriteEnabled);
+            DbContext.BeginWrite(!WriteEnabled);
 
-            if (!WriteContextBag.ContainsKey(this.DbContext))
+            if (!WriteContextBag.ContainsKey(DbContext))
             {
-                _ = WriteContextBag.TryAdd(this.DbContext, new SynchronizedCollection<IWriteContext>());
+                _ = WriteContextBag.TryAdd(DbContext, new SynchronizedCollection<IWriteContext>());
             }
 
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log($"{this.Id}: Enabling write. Initial depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                StaticLogger.Log($"{Id}: Enabling write. Initial depth {OpenWriteContexts[DbContext].Count}", StaticLogger.LoggingLevel.Call);
             }
 
-            if (!this.OpenWriteContexts[this.DbContext].Contains(context))
+            if (!OpenWriteContexts[DbContext].Contains(context))
             {
-                this.OpenWriteContexts[this.DbContext].Add(context);
+                OpenWriteContexts[DbContext].Add(context);
             }
         }
 
@@ -182,12 +182,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         {
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log($"{this.Id}: Cancelling write. Current depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+                StaticLogger.Log($"{Id}: Cancelling write. Current depth {OpenWriteContexts[DbContext].Count}", StaticLogger.LoggingLevel.Final);
             }
 
-            this.DbContext.Dispose();
+            DbContext.Dispose();
 
-            _ = WriteContextBag.TryRemove(this.DbContext, out _);
+            _ = WriteContextBag.TryRemove(DbContext, out _);
         }
 
         /// <summary>
@@ -197,48 +197,27 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         public override void Commit(IWriteContext writeContext)
         {
             //We only actually want to call commit if this is the ONLY open context (Top Level in nested call)
-            if (this.GetWriteContexts().Count() == 1 && this.GetWriteContexts().Single() == writeContext)
+            if (GetWriteContexts().Count() == 1 && GetWriteContexts().Single() == writeContext)
             {
                 if (StaticLogger.IsListening)
                 {
-                    StaticLogger.Log($"{this.Id}: Saving context changes. Current depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                    StaticLogger.Log($"{Id}: Saving context changes. Current depth {OpenWriteContexts[DbContext].Count}", StaticLogger.LoggingLevel.Call);
                 }
 
-                /* Unmerged change from project 'Penguin.Persistence.Repositories.EntityFramework.Local (net48)'
-                Before:
-                                int retryCount = 0;
-
-                                //Why is this here?
-                After:
-                                int retryCount = 0;
-
-                                //Why is this here?
-                */
-
-                /* Unmerged change from project 'Penguin.Persistence.Repositories.EntityFramework.Local (netstandard2.0)'
-                Before:
-                                int retryCount = 0;
-
-                                //Why is this here?
-                After:
-                                int retryCount = 0;
-
-                                //Why is this here?
-                */
+             
                 int retryCount = 0;
 
                 //Why is this here?
                 bool retry = false;
 
-                Queue<PostEntitySaveEvent> postSaveEvents = this.PreCommitMessages();
+                Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
 
                 do
                 {
-
                     try
                     {
-                        this.DbContext.SaveChanges();
-                        this.PostCommitMessages(postSaveEvents);
+                        DbContext.SaveChanges();
+                        PostCommitMessages(postSaveEvents);
                         break;
                     }
                     catch (Exception) when (retryCount++ < 5 && retry)
@@ -247,9 +226,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     }
                     catch (Exception)
                     {
-                        WriteContextBag.Clear(this.DbContext);
+                        WriteContextBag.Clear(DbContext);
 
-                        this.DbContext.Dispose();
+                        DbContext.Dispose();
 
                         throw;
                     }
@@ -264,15 +243,15 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         public override async Task CommitASync(IWriteContext writeContext)
         {
             //We only actually want to call commit if this is the ONLY open context (Top Level in nested call)
-            if (this.GetWriteContexts().Count() == 1 && this.GetWriteContexts().Single() == writeContext)
+            if (GetWriteContexts().Count() == 1 && GetWriteContexts().Single() == writeContext)
             {
                 if (StaticLogger.IsListening)
                 {
-                    StaticLogger.Log($"{this.Id}: Async Saving context changes. Current depth {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Call);
+                    StaticLogger.Log($"{Id}: Async Saving context changes. Current depth {OpenWriteContexts[DbContext].Count}", StaticLogger.LoggingLevel.Call);
                 }
-                Queue<PostEntitySaveEvent> postSaveEvents = this.PreCommitMessages();
-                await this.DbContext.SaveChangesAsync().ConfigureAwait(false);
-                this.PostCommitMessages(postSaveEvents);
+                Queue<PostEntitySaveEvent> postSaveEvents = PreCommitMessages();
+                await DbContext.SaveChangesAsync().ConfigureAwait(false);
+                PostCommitMessages(postSaveEvents);
             }
         }
 
@@ -282,7 +261,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="o">the object to delete</param>
         public override void Delete(T o)
         {
-            _ = this.DbContext.Set<T>().Remove(o);
+            _ = DbContext.Set<T>().Remove(o);
         }
 
         /// <summary>
@@ -291,18 +270,18 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="context"></param>
         public override void EndWrite(IWriteContext context)
         {
-            _ = this.OpenWriteContexts[this.DbContext].Remove(context);
+            _ = OpenWriteContexts[DbContext].Remove(context);
 
             if (StaticLogger.IsListening)
             {
-                StaticLogger.Log($"{this.Id}: Ending write at depth of {this.OpenWriteContexts[this.DbContext].Count}", StaticLogger.LoggingLevel.Final);
+                StaticLogger.Log($"{Id}: Ending write at depth of {OpenWriteContexts[DbContext].Count}", StaticLogger.LoggingLevel.Final);
             }
 
-            if (this.OpenWriteContexts[this.DbContext].Count == 0)
+            if (OpenWriteContexts[DbContext].Count == 0)
             {
-                this.DbContext.Dispose();
+                DbContext.Dispose();
 
-                _ = WriteContextBag.TryRemove(this.DbContext, out _);
+                _ = WriteContextBag.TryRemove(DbContext, out _);
             }
         }
 
@@ -313,7 +292,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns>An object (or null) with a matching key</returns>
         public override T Find(object Key)
         {
-            T toReturn = this.DbContext.Set<T>().Find(Key);
+            T toReturn = DbContext.Set<T>().Find(Key);
 
             if (toReturn is null)
             {
@@ -327,11 +306,11 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             IEnumerable<string> includes = Includes.Select(s => $"Root.{s}");
 
-            Dictionary<string, List<object>> navigationProperties = new Dictionary<string, List<object>>(Includes.Length);
-            Dictionary<object, DbEntityEntry> EntityEntries = new Dictionary<object, DbEntityEntry>(Includes.Length);
+            Dictionary<string, List<object>> navigationProperties = new(Includes.Length);
+            Dictionary<object, DbEntityEntry> EntityEntries = new(Includes.Length);
 
             navigationProperties.Add("Root", new List<object>() { toReturn });
-            EntityEntries.Add(toReturn, this.DbContext.Entry(toReturn));
+            EntityEntries.Add(toReturn, DbContext.Entry(toReturn));
 
             foreach (string include in includes)
             {
@@ -345,7 +324,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 {
                     if (!EntityEntries.TryGetValue(include.ToLast('.'), out DbEntityEntry thisEntry))
                     {
-                        thisEntry = this.DbContext.Entry(o);
+                        thisEntry = DbContext.Entry(o);
                     }
 
                     DbMemberEntry memberEntry = thisEntry.Member(include.FromLast('.'));
@@ -395,7 +374,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns></returns>
         public override IEnumerable<IWriteContext> GetWriteContexts()
         {
-            return this.OpenWriteContexts[this.DbContext].ToList();
+            return OpenWriteContexts[DbContext].ToList();
         }
 
         /// <summary>
@@ -405,7 +384,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns>A subset including only the derived type from the underlying persistence context</returns>
         public override IQueryable<TDerived> OfType<TDerived>()
         {
-            return GenerateBaseQuery(this.DbContext.Set<TDerived>());
+            return GenerateBaseQuery(DbContext.Set<TDerived>());
         }
 
         /// <summary>
@@ -419,7 +398,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 throw new ArgumentNullException(nameof(o), "Can not update null object");
             }
 
-            _ = this.CheckAndUpdate(o);
+            _ = CheckAndUpdate(o);
         }
 
         /// <summary>
@@ -440,7 +419,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns>A list of strings to Include while accessing the database</returns>
         protected static List<string> IncludeStrings(Type toGenerate, string NameSpace = "", bool Recursive = true)
         {
-            Stack<Type> typeStack = new Stack<Type>();
+            Stack<Type> typeStack = new();
 
             typeStack.Push(toGenerate);
 
@@ -462,12 +441,12 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 throw new ArgumentNullException(nameof(toGenerate));
             }
 
-            List<string> ToReturn = new List<string>();
+            List<string> ToReturn = new();
 
             if (depth == 0)
             { return ToReturn; }
 
-            List<PropertyInfo> EagerLoadProperties = TypeCache.GetProperties(toGenerate.Peek()).Where(p => TypeCache.HasAttribute<EagerLoadAttribute>(p)).ToList();
+            List<PropertyInfo> EagerLoadProperties = TypeCache.GetProperties(toGenerate.Peek()).Where(TypeCache.HasAttribute<EagerLoadAttribute>).ToList();
 
             foreach (PropertyInfo toEagerLoad in EagerLoadProperties)
             {
@@ -524,7 +503,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
         private bool CheckAndUpdate(T o)
         {
-            DbSet<T> set = this.DbContext.Set<T>();
+            DbSet<T> set = DbContext.Set<T>();
 
             int Key = o._Id;
             T old;
@@ -541,7 +520,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
         private void PostCommitMessages(Queue<PostEntitySaveEvent> PostSaveEvents)
         {
-            if (this.MessageBus is null)
+            if (MessageBus is null)
             {
                 return;
             }
@@ -555,16 +534,16 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 switch (psEvent.EntityState)
                 {
                     case EntityState.Added:
-                        this.MessageBus?.Send(Activator.CreateInstance(typeof(Created<>).MakeGenericType(thisType), psEvent.Entity));
+                        MessageBus?.Send(Activator.CreateInstance(typeof(Created<>).MakeGenericType(thisType), psEvent.Entity));
                         ;
                         goto case EntityState.Modified;
 
                     case EntityState.Modified:
-                        this.MessageBus?.Send(Activator.CreateInstance(typeof(Updated<>).MakeGenericType(thisType), psEvent.Entity, psEvent));
+                        MessageBus?.Send(Activator.CreateInstance(typeof(Updated<>).MakeGenericType(thisType), psEvent.Entity, psEvent));
                         break;
 
                     case EntityState.Deleted:
-                        this.MessageBus?.Send(Activator.CreateInstance(typeof(Deleted<>).MakeGenericType(thisType), psEvent.Entity));
+                        MessageBus?.Send(Activator.CreateInstance(typeof(Deleted<>).MakeGenericType(thisType), psEvent.Entity));
                         break;
 
                     default:
@@ -572,21 +551,21 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 }
             }
 
-            this.MessageBus.Send(new PostCommit());
+            MessageBus.Send(new PostCommit());
         }
 
         private Queue<PostEntitySaveEvent> PreCommitMessages()
         {
-            if (this.MessageBus is null)
+            if (MessageBus is null)
             {
                 return new Queue<PostEntitySaveEvent>();
             }
 
-            List<DbEntityEntry> modifiedEntities = this.DbContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Added || x.State == EntityState.Deleted || x.State == EntityState.Modified).ToList();
+            List<DbEntityEntry> modifiedEntities = DbContext.ChangeTracker.Entries().Where(x => x.State is EntityState.Added or EntityState.Deleted or EntityState.Modified).ToList();
 
-            HashSet<object> processed = new HashSet<object>();
+            HashSet<object> processed = new();
 
-            Queue<PostEntitySaveEvent> PostSaveEvents = new Queue<PostEntitySaveEvent>();
+            Queue<PostEntitySaveEvent> PostSaveEvents = new();
 
             foreach (DbEntityEntry nextEntry in modifiedEntities)
             {
@@ -596,7 +575,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 if (processed.Contains(nextEntry.Entity))
                 { continue; }
 
-                PostEntitySaveEvent thisEvent = new PostEntitySaveEvent()
+                PostEntitySaveEvent thisEvent = new()
                 {
                     Entity = nextEntry.Entity,
                     EntityState = nextEntry.State
@@ -628,15 +607,15 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 switch (nextEntry.State)
                 {
                     case EntityState.Added:
-                        this.MessageBus.Send(Activator.CreateInstance(typeof(Creating<>).MakeGenericType(thisType), nextEntry.Entity));
+                        MessageBus.Send(Activator.CreateInstance(typeof(Creating<>).MakeGenericType(thisType), nextEntry.Entity));
                         goto case EntityState.Modified;
 
                     case EntityState.Modified:
-                        this.MessageBus.Send(Activator.CreateInstance(typeof(Updating<>).MakeGenericType(thisType), nextEntry.Entity, thisEvent));
+                        MessageBus.Send(Activator.CreateInstance(typeof(Updating<>).MakeGenericType(thisType), nextEntry.Entity, thisEvent));
                         break;
 
                     case EntityState.Deleted:
-                        this.MessageBus.Send(Activator.CreateInstance(typeof(Deleting<>).MakeGenericType(thisType), nextEntry.Entity));
+                        MessageBus.Send(Activator.CreateInstance(typeof(Deleting<>).MakeGenericType(thisType), nextEntry.Entity));
                         break;
 
                     default:
@@ -646,7 +625,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 _ = processed.Add(nextEntry.Entity);
             }
 
-            this.MessageBus.Send(new PreCommit());
+            MessageBus.Send(new PreCommit());
 
             return PostSaveEvents;
         }
@@ -674,7 +653,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <returns></returns>
         public SynchronizedCollection<IWriteContext> this[IDbContext context] => OpenWriteContexts.TryGetValue(context, out SynchronizedCollection<IWriteContext> contexts) ? contexts : new SynchronizedCollection<IWriteContext>();
 
-        private static readonly ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>>();
+        private static readonly ConcurrentDictionary<IDbContext, SynchronizedCollection<IWriteContext>> OpenWriteContexts = new();
 
         internal static void Clear(IDbContext dbContext)
         {

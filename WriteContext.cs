@@ -26,9 +26,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="context">The persistence context to use for these changes</param>
         public WriteContext(IPersistenceContext context)
         {
-            this.Context = context;
+            Context = context;
 
-            this.EnableWrite();
+            EnableWrite();
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public void CancelWrite()
         {
-            this.Context.CancelWrite();
+            Context.CancelWrite();
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -53,26 +53,26 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposedValue)
+            if (!disposedValue)
             {
-                if (this.Async)
+                if (Async)
                 {
-                    this.Context.Commit(this);
+                    Context.Commit(this);
                 }
                 else
                 {
-                    this.Context.Commit(this);
+                    Context.Commit(this);
                 }
 
-                this.Context.EndWrite(this);
+                Context.EndWrite(this);
 
-                this.disposedValue = true;
+                disposedValue = true;
             }
         }
 
         private void EnableWrite()
         {
-            this.Context.BeginWrite(this);
+            Context.BeginWrite(this);
         }
 
         // To detect redundant calls
@@ -81,7 +81,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         ~WriteContext()
         {
-            this.Dispose(false);
+            Dispose(false);
         }
     }
 }

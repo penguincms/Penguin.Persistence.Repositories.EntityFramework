@@ -22,7 +22,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
     [Register(ServiceLifetime.Transient, typeof(IPersistenceContextMigrator))]
     public class EFContextMigrator : IPersistenceContextMigrator
     {
-        public bool IsConfigured => !string.IsNullOrWhiteSpace(this.PersistenceConnectionInfo.ConnectionString);
+        /// <inheritdoc/>
+        public bool IsConfigured => !string.IsNullOrWhiteSpace(PersistenceConnectionInfo.ConnectionString);
         private PersistenceConnectionInfo PersistenceConnectionInfo { get; set; }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <param name="connectionInfo"></param>
         public EFContextMigrator(PersistenceConnectionInfo connectionInfo)
         {
-            this.PersistenceConnectionInfo = connectionInfo;
+            PersistenceConnectionInfo = connectionInfo;
         }
 
         /// <summary>
@@ -41,26 +42,26 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         {
             try
             {
-                IsServerConnected(this.PersistenceConnectionInfo.ConnectionString);
+                IsServerConnected(PersistenceConnectionInfo.ConnectionString);
             }
             catch (Exception)
             {
-                Dictionary<string, string> settings = this.PersistenceConnectionInfo.ConnectionString.ToDictionary();
+                Dictionary<string, string> settings = PersistenceConnectionInfo.ConnectionString.ToDictionary();
                 string dbName = settings["Initial Catalog"];
                 settings["Initial Catalog"] = "master";
 
                 string masterString = settings.ToFormattedString();
 
-                using (SqlConnection connection = new SqlConnection(masterString))
+                using (SqlConnection connection = new(masterString))
                 {
-                    using (SqlCommand command = new SqlCommand($"CREATE DATABASE {dbName}", connection))
+                    using (SqlCommand command = new($"CREATE DATABASE {dbName}", connection))
                     {
                         command.Connection.Open();
                         _ = command.ExecuteNonQuery();
                     }
                 }
 
-                IsServerConnected(this.PersistenceConnectionInfo.ConnectionString);
+                IsServerConnected(PersistenceConnectionInfo.ConnectionString);
             }
 
             foreach (Type t in TypeFactory.GetDerivedTypes(typeof(DbMigrationsConfiguration)).Where(t => !t.ContainsGenericParameters))
@@ -74,9 +75,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
 
                     if (configuration.AutomaticMigrationsEnabled)
                     {
-                        configuration.TargetDatabase = new DbConnectionInfo(this.PersistenceConnectionInfo.ConnectionString, this.PersistenceConnectionInfo.ProviderName);
+                        configuration.TargetDatabase = new DbConnectionInfo(PersistenceConnectionInfo.ConnectionString, PersistenceConnectionInfo.ProviderName);
 
-                        DbMigrator migrator = new DbMigrator(configuration);
+                        DbMigrator migrator = new(configuration);
 
                         try
                         {
@@ -122,7 +123,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <returns>true if the connection is opened</returns>
         private static void IsServerConnected(string connectionString)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new(connectionString))
             {
                 connection.Open();
             }

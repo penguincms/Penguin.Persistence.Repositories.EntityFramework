@@ -28,7 +28,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                 FieldInfo fi_InternalContext = typeDbContext.GetField("_internalContext", BindingFlags.NonPublic | BindingFlags.Instance);
                 PropertyInfo pi_IsDisposed = typeInternalContext.GetProperty("IsDisposed");
 
-                object ic = fi_InternalContext.GetValue(this.DbContext);
+                object ic = fi_InternalContext.GetValue(DbContext);
 
                 if (ic != null)
                 {
@@ -42,7 +42,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <summary>
         /// The backing DbContext
         /// </summary>
-        protected override DbContext DbContext => this.CurrentContext;
+        protected override DbContext DbContext => CurrentContext;
 
         private DbContext CurrentContext { get; set; }
 
@@ -55,8 +55,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="preventDispose">Prevents the underlying context from being dispose when Dispose() is called (in case there are lazy loaded entities)</param>
         public SingleUseDbContext(PersistenceConnectionInfo connectionInfo, bool preventDispose = false)
         {
-            this.CurrentContext = new DynamicContext(connectionInfo);
-            this.PreventDispose = preventDispose;
+            CurrentContext = new DynamicContext(connectionInfo);
+            PreventDispose = preventDispose;
         }
 
         /// <summary>
@@ -66,20 +66,20 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// <param name="preventDispose">Prevents the underlying context from being dispose when Dispose() is called (in case there are lazy loaded entities)</param>
         public SingleUseDbContext(string connectionString, bool preventDispose = false)
         {
-            this.CurrentContext = new DynamicContext(new PersistenceConnectionInfo(connectionString));
-            this.PreventDispose = preventDispose;
+            CurrentContext = new DynamicContext(new PersistenceConnectionInfo(connectionString));
+            PreventDispose = preventDispose;
         }
 
         /// <summary>
         /// Detatches all existing items from the context
         /// </summary>
-        /// <param name="newWrite">True if the context has not already been opened</param>
-        public override void BeginWrite(bool newWrite)
+        /// <param name="NewWrite">True if the context has not already been opened</param>
+        public override void BeginWrite(bool NewWrite)
         {
             //Only detatch if we dont already have a context open
-            if (newWrite)
+            if (NewWrite)
             {
-                foreach (DbEntityEntry dbEntityEntry in this.DbContext.ChangeTracker.Entries())
+                foreach (DbEntityEntry dbEntityEntry in DbContext.ChangeTracker.Entries())
                 {
                     if (dbEntityEntry.Entity != null)
                     {
@@ -94,9 +94,9 @@ namespace Penguin.Persistence.Repositories.EntityFramework
         /// </summary>
         public override void Dispose()
         {
-            if (!this.PreventDispose)
+            if (!PreventDispose)
             {
-                this.DbContext.Dispose();
+                DbContext.Dispose();
             }
         }
     }

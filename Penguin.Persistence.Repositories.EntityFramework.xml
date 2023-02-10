@@ -237,6 +237,9 @@
             A class designed to initialize and update the database schema
             </summary>
         </member>
+        <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator.IsConfigured">
+            <inheritdoc/>
+        </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator.#ctor(Penguin.Persistence.Abstractions.PersistenceConnectionInfo)">
             <summary>
             Constructs a new instance of the migrator using the provided connection string
@@ -291,7 +294,7 @@
             <summary>
             Moves the existing context to the graveyard so that changes cant be saved on it
             </summary>
-            <param name="newWrite">True if the context has not already been opened</param>
+            <param name="NewWrite">True if the context has not already been opened</param>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.ExtendedUseDbContextWrapper.Dispose">
             <summary>
@@ -342,7 +345,7 @@
             <summary>
             Detatches all existing items from the context
             </summary>
-            <param name="newWrite">True if the context has not already been opened</param>
+            <param name="NewWrite">True if the context has not already been opened</param>
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.SingleUseDbContext.Dispose">
             <summary>

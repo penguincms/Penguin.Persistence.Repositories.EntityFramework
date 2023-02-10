@@ -14,7 +14,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <summary>
         /// Forwarded to current instance
         /// </summary>
-        public DbChangeTracker ChangeTracker => this.DbContext.ChangeTracker;
+        public DbChangeTracker ChangeTracker => DbContext.ChangeTracker;
 
         /// <summary>
         /// Checks to see if the instance is still valid
@@ -43,7 +43,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// <returns>The entity entry for the object</returns>
         public DbEntityEntry Entry(object entity)
         {
-            return this.DbContext.Entry(entity);
+            return DbContext.Entry(entity);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// </summary>
         public virtual void SaveChanges()
         {
-            _ = this.DbContext.SaveChanges();
+            _ = DbContext.SaveChanges();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// </summary>
         public virtual Task SaveChangesAsync()
         {
-            return this.DbContext.SaveChangesAsync();
+            return DbContext.SaveChangesAsync();
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// </summary>
         public DbSet<T> Set<T>() where T : class
         {
-            return this.DbContext.Set<T>();
+            return DbContext.Set<T>();
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
         /// </summary>
         public DbSet Set(Type toCheck)
         {
-            return this.DbContext.Set(toCheck);
+            return DbContext.Set(toCheck);
         }
     }
 }
