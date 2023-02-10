@@ -238,7 +238,7 @@
             </summary>
         </member>
         <member name="P:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator.IsConfigured">
-            <inheritdoc/>
+            <inheritdoc />
         </member>
         <member name="M:Penguin.Persistence.Repositories.EntityFramework.Objects.EFContextMigrator.#ctor(Penguin.Persistence.Abstractions.PersistenceConnectionInfo)">
             <summary>

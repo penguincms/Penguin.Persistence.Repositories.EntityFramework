@@ -11,6 +11,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Interfaces
     public interface IDbContext
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
         DbChangeTracker ChangeTracker { get; }
 
         void BeginWrite(bool NewWrite);

@@ -24,6 +24,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
     {
         /// <inheritdoc/>
         public bool IsConfigured => !string.IsNullOrWhiteSpace(PersistenceConnectionInfo.ConnectionString);
+
         private PersistenceConnectionInfo PersistenceConnectionInfo { get; set; }
 
         /// <summary>
