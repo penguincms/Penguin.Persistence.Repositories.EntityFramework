@@ -204,7 +204,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
                     StaticLogger.Log($"{Id}: Saving context changes. Current depth {OpenWriteContexts[DbContext].Count}", StaticLogger.LoggingLevel.Call);
                 }
 
-             
                 int retryCount = 0;
 
                 //Why is this here?
