@@ -50,6 +50,6 @@
     <None Remove="Penguin.Persistence.Repositories.EntityFramework.NetFramework.nuspec" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
   </ItemGroup>
 </Project>
