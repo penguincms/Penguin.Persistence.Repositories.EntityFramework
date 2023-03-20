@@ -16,6 +16,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
@@ -426,6 +427,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return IncludeStrings(typeStack, NameSpace, Recursive);
         }
 
+        static TypeFactory TypeFactory { get; set; } = new TypeFactory(new TypeFactorySettings());
+
         /// <summary>
         /// Generates a list of strings to Include while accessing the database, using the EagerLoad attributes found on the properties
         /// </summary>
@@ -446,7 +449,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             if (depth == 0)
             { return ToReturn; }
 
-            List<PropertyInfo> EagerLoadProperties = TypeCache.GetProperties(toGenerate.Peek()).Where(TypeCache.HasAttribute<EagerLoadAttribute>).ToList();
+            List<PropertyInfo> EagerLoadProperties = TypeFactory.GetProperties(toGenerate.Peek()).Where(TypeFactory.HasAttribute<EagerLoadAttribute>).ToList();
 
             foreach (PropertyInfo toEagerLoad in EagerLoadProperties)
             {
@@ -455,7 +458,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                 if (Recursive)
                 {
-                    int? thisPropDepth = depth ?? TypeCache.GetAttribute<EagerLoadAttribute>(toEagerLoad).Depth;
+                    int? thisPropDepth = depth ?? TypeFactory.GetAttribute<EagerLoadAttribute>(toEagerLoad).Depth;
 
                     if (thisPropDepth != null)
                     {
@@ -569,7 +572,8 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
             foreach (DbEntityEntry nextEntry in modifiedEntities)
             {
-                Type thisType = TypeFactory.GetType(nextEntry.Entity);
+                Type thisType = ObjectContext.GetObjectType(nextEntry.Entity.GetType());
+
                 // For some reason items are/were being added more than once, so we need to make sure
                 // that we dont process the same entity more than once
                 if (processed.Contains(nextEntry.Entity))
