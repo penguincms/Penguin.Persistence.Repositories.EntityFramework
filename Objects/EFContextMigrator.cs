@@ -66,10 +66,10 @@ namespace Penguin.Persistence.Repositories.EntityFramework.Objects
                 IsServerConnected(PersistenceConnectionInfo.ConnectionString);
             }
 
-            foreach (Type t in TypeFactory.GetDerivedTypes(typeof(DbMigrationsConfiguration)).Where(t => !t.ContainsGenericParameters))
+            foreach (Type t in TypeFactory.Default.GetDerivedTypes(typeof(DbMigrationsConfiguration)).Where(t => !t.ContainsGenericParameters))
             {
                 //Allow for overridden migration configs via inheritance
-                Type derived = TypeFactory.GetMostDerivedType(t);
+                Type derived = TypeFactory.Default.GetMostDerivedType(t);
 
                 if (derived is null || derived == t)
                 {

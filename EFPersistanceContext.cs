@@ -1,6 +1,5 @@
 using Loxifi;
 using Penguin.Debugging;
-using Penguin.Extensions.String;
 using Penguin.Messaging.Core;
 using Penguin.Messaging.Persistence.Messages;
 using Penguin.Persistence.Abstractions;
@@ -8,7 +7,6 @@ using Penguin.Persistence.Abstractions.Attributes.Control;
 using Penguin.Persistence.Abstractions.Interfaces;
 using Penguin.Persistence.Repositories.EntityFramework.Interfaces;
 using Penguin.Persistence.Repositories.EntityFramework.Objects;
-using Penguin.Reflection;
 using Penguin.Reflection.Abstractions;
 using Penguin.Reflection.Extensions;
 using System;
@@ -427,8 +425,6 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             return IncludeStrings(typeStack, NameSpace, Recursive);
         }
 
-        static TypeFactory TypeFactory { get; set; } = new TypeFactory(new TypeFactorySettings());
-
         /// <summary>
         /// Generates a list of strings to Include while accessing the database, using the EagerLoad attributes found on the properties
         /// </summary>
@@ -449,7 +445,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
             if (depth == 0)
             { return ToReturn; }
 
-            List<PropertyInfo> EagerLoadProperties = TypeFactory.GetProperties(toGenerate.Peek()).Where(TypeFactory.HasAttribute<EagerLoadAttribute>).ToList();
+            List<PropertyInfo> EagerLoadProperties = TypeFactory.Default.GetProperties(toGenerate.Peek()).Where(TypeFactory.Default.HasAttribute<EagerLoadAttribute>).ToList();
 
             foreach (PropertyInfo toEagerLoad in EagerLoadProperties)
             {
@@ -458,7 +454,7 @@ namespace Penguin.Persistence.Repositories.EntityFramework
 
                 if (Recursive)
                 {
-                    int? thisPropDepth = depth ?? TypeFactory.GetAttribute<EagerLoadAttribute>(toEagerLoad).Depth;
+                    int? thisPropDepth = depth ?? TypeFactory.Default.GetAttribute<EagerLoadAttribute>(toEagerLoad).Depth;
 
                     if (thisPropDepth != null)
                     {
